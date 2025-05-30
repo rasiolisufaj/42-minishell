@@ -1,15 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing_files.c                                    :+:      :+:    :+:   */
+/*   lexing_file.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
+/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/30 14:24:27 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/05/30 14:29:36 by raisufaj         ###   ########.fr       */
+/*   Created: 2025/05/30 15:20:18 by itaharbo          #+#    #+#             */
+/*   Updated: 2025/05/30 15:29:37 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-/*
- # Tokenization, parsing
-*/
+#include "minishell_structs.h"
+
+char	lexer(char *str, t_token token)
+{
+	int	len;
+	
+	len = 0;
+	
+}
