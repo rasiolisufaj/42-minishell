@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexing_file.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
+/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 15:20:18 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/06/07 17:08:57 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/06/07 17:12:22 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,6 +230,11 @@ char	*concat_quote(const char *input, int *i, char *quoted)
 }*/
 static char	*ft_strndup(const char *src, size_t n)
 {
+	size_t	i;
+	char	*dst;
+
+	if (!src)
+		return (NULL);
 	dst = malloc(n + 1);
 	if (!dst)
 		return (NULL);
