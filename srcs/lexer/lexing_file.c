@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   lexing_file.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 15:20:18 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/06/07 17:01:50 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/06/07 17:08:57 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell_structs.h"
-#include <string.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 int	is_space(char c)
 {
@@ -111,14 +111,14 @@ void	pipe_token(const char *input, int *i, t_token *new_token)
 {
 	if (input[*i + 1] == '|')
 	{
-		new_token->value = T_OR;
-		new_token->type = ft_strdup("||");
+		new_token->type = T_OR;
+		new_token->value = ft_strdup("||");
 		*i += 2;
 	}
 	else
 	{
-		new_token->value = T_PIPE;
-		new_token->type = ft_strdup("|");
+		new_token->type = T_PIPE;
+		new_token->value = ft_strdup("|");
 		(*i)++;
 	}
 }
@@ -127,14 +127,14 @@ void	redir_less_token(const char *input, int *i, t_token *new_token)
 {
 	if (input[*i + 1] == '<')
 	{
-		new_token->value = T_HEREDOC;
-		new_token->type = ft_strdup("<<");
+		new_token->type = T_HEREDOC;
+		new_token->value = ft_strdup("<<");
 		*i += 2;
 	}
 	else
 	{
-		new_token->value = T_REDIR_IN;
-		new_token->type = ft_strdup("<");
+		new_token->type = T_REDIR_IN;
+		new_token->value = ft_strdup("<");
 		(*i)++;
 	}
 }
@@ -143,14 +143,14 @@ void	redir_great_token(const char *input, int *i, t_token *new_token)
 {
 	if (input[*i + 1] == '>')
 	{
-		new_token->value = T_REDIR_APPEND;
-		new_token->type = ft_strdup(">>");
+		new_token->type = T_REDIR_APPEND;
+		new_token->value = ft_strdup(">>");
 		*i += 2;
 	}
 	else
 	{
-		new_token->value = T_REDIR_OUT;
-		new_token->type = ft_strdup(">");
+		new_token->type = T_REDIR_OUT;
+		new_token->value = ft_strdup(">");
 		(*i)++;
 	}
 }
@@ -168,8 +168,8 @@ char	*concat_quote(const char *input, int *i, char *quoted)
 	if (*i > start)
 	{
 		after = ft_substr(input, start, *i - start);
-		joined = malloc(sizeof(char)
-				* (ft_strlen(quoted) + ft_strlen(after) + 1));
+		joined = malloc(sizeof(char) * (ft_strlen(quoted) + ft_strlen(after)
+					+ 1));
 		if (!joined)
 		{
 			free(after);
@@ -188,7 +188,9 @@ char	*concat_quote(const char *input, int *i, char *quoted)
 
 /*void	word_token(const char *input, int *i, t_token *new_token)
 {
-	int	start;
+	int		start;
+	char	*dst;
+	size_t	i;
 
 	start = *i;
 	if (input[*i] == '\'' || input[*i] == '"')
@@ -202,13 +204,13 @@ char	*concat_quote(const char *input, int *i, char *quoted)
 		if (input[*i] == quote)
 			(*i)++;
 		tmp = concat_quote(input, i, tmp);
-		new_token->value = T_WORD;
-		new_token->type = tmp;
+		new_token->type = T_WORD;
+		new_token->value = tmp;
 	}
 	else if (input[*i] == '$' && input[*i + 1] == '?')
 	{
-		new_token->value = T_VAR;
-		new_token->type = ft_strdup("$?");
+		new_token->type = T_VAR;
+		new_token->value = ft_strdup("$?");
 		*i += 2;
 	}
 	else
@@ -220,17 +222,14 @@ char	*concat_quote(const char *input, int *i, char *quoted)
 				break ;
 			(*i)++;
 		}
-		new_token->value = T_WORD;
-		new_token->type = ft_substr(input, start, *i - start);
+		new_token->type = T_WORD;
+		new_token->value = ft_substr(input, start, *i - start);
 	}
-	if (!new_token->type)
+	if (!new_token->value)
 		exit(1);
 }*/
 static char	*ft_strndup(const char *src, size_t n)
 {
-	char	*dst;
-	size_t	i;
-
 	dst = malloc(n + 1);
 	if (!dst)
 		return (NULL);
@@ -250,6 +249,7 @@ void	word_token(const char *input, int *i, t_token *new_token)
 	char	*tmp;
 	char	*part;
 	int		start;
+	char	quote;
 
 	buffer = malloc(1);
 	if (!buffer)
@@ -273,7 +273,7 @@ void	word_token(const char *input, int *i, t_token *new_token)
 		}
 		else if (input[*i] == '\'' || input[*i] == '"')
 		{
-			char	quote = input[*i];
+			quote = input[*i];
 			(*i)++;
 			start = *i;
 			while (input[*i] && input[*i] != quote)
@@ -331,9 +331,9 @@ void	word_token(const char *input, int *i, t_token *new_token)
 			}
 		}
 	}
-	new_token->value = T_WORD;
-	new_token->type = buffer;
-	if (!new_token->type)
+	new_token->type = T_WORD;
+	new_token->value = buffer;
+	if (!new_token->value)
 		exit(1);
 }
 
@@ -347,11 +347,11 @@ void	tokenizer(const char *input, int *i, t_token *new_token)
 		redir_great_token(input, i, new_token);
 	else if (input[*i] == '&' && input[*i + 1] == '&')
 	{
-		new_token->value = T_AND;
-		new_token->type = ft_strdup("&&");
+		new_token->type = T_AND;
+		new_token->value = ft_strdup("&&");
 		*i += 2;
 	}
-	else if (input [*i] == '&')
+	else if (input[*i] == '&')
 	{
 		fprintf(stderr, "Error: '&' is not a valid token\n");
 		exit(1);
@@ -408,7 +408,7 @@ void	free_tokens(t_token *token)
 	{
 		tmp = token;
 		token = token->next;
-		free(tmp->type);
+		free(tmp->value);
 		free(tmp);
 	}
 }
@@ -430,7 +430,7 @@ int	main(void)
 	tmp = tokens;
 	while (tmp)
 	{
-		printf("Token: %s, Type: %d\n", tmp->type, tmp->value);
+		printf("Token: %s, value: %d\n", tmp->value, tmp->type);
 		tmp = tmp->next;
 	}
 	free_tokens(tokens);
