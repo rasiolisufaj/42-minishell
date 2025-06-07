@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 15:35:46 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/06/07 17:04:59 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/06/07 19:24:28 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ typedef enum e_token_type
 	T_HEREDOC,
 	T_AND,
 	T_OR,
+	T_PAREN_OPEN,
+	T_PAREN_CLOSE,
 }	t_token_type;
 
 typedef struct s_token

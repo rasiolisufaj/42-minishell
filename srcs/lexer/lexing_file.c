@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 15:20:18 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/06/07 17:12:22 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/06/07 19:29:05 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@ int	is_space(char c)
 
 int	is_operator(char c)
 {
-	return (c == '>' || c == '<' || c == '&' || c == '|');
+	return (c == '>' || c == '<' || c == '&' || c == '|'
+		|| c == '(' || c == ')');
 }
 
 int	ft_strlen(const char *s)
@@ -155,6 +156,22 @@ void	redir_great_token(const char *input, int *i, t_token *new_token)
 	}
 }
 
+void	parenthesis_token(const char *input, int *i, t_token *new_token)
+{
+	if (input[*i] == '(')
+	{
+		new_token->type = T_PAREN_OPEN;
+		new_token->value = ft_strdup("(");
+		(*i)++;
+	}
+	else if (input[*i] == ')')
+	{
+		new_token->type = T_PAREN_CLOSE;
+		new_token->value = ft_strdup(")");
+		(*i)++;
+	}
+}
+
 char	*concat_quote(const char *input, int *i, char *quoted)
 {
 	int		start;
@@ -186,48 +203,6 @@ char	*concat_quote(const char *input, int *i, char *quoted)
 	return (quoted);
 }
 
-/*void	word_token(const char *input, int *i, t_token *new_token)
-{
-	int		start;
-	char	*dst;
-	size_t	i;
-
-	start = *i;
-	if (input[*i] == '\'' || input[*i] == '"')
-	{
-		quote = input[*i];
-		(*i)++;
-		start = *i;
-		while (input[*i] && input[*i] != quote)
-			(*i)++;
-		tmp = ft_substr(input, start, *i - start);
-		if (input[*i] == quote)
-			(*i)++;
-		tmp = concat_quote(input, i, tmp);
-		new_token->type = T_WORD;
-		new_token->value = tmp;
-	}
-	else if (input[*i] == '$' && input[*i + 1] == '?')
-	{
-		new_token->type = T_VAR;
-		new_token->value = ft_strdup("$?");
-		*i += 2;
-	}
-	else
-	{
-		start = *i;
-		while (input[*i] && !is_space(input[*i]) && !is_operator(input[*i]))
-		{
-			if (input[*i] == '\'' || input[*i] == '"')
-				break ;
-			(*i)++;
-		}
-		new_token->type = T_WORD;
-		new_token->value = ft_substr(input, start, *i - start);
-	}
-	if (!new_token->value)
-		exit(1);
-}*/
 static char	*ft_strndup(const char *src, size_t n)
 {
 	size_t	i;
@@ -361,6 +336,8 @@ void	tokenizer(const char *input, int *i, t_token *new_token)
 		fprintf(stderr, "Error: '&' is not a valid token\n");
 		exit(1);
 	}
+	else if (input[*i] == '(' || input[*i] == ')')
+		parenthesis_token(input, i, new_token);
 	else
 		word_token(input, i, new_token);
 }
