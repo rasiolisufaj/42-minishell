@@ -6,11 +6,11 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 15:20:18 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/06/07 16:49:40 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/06/07 17:01:50 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell_structs.h"
+#include "../../includes/minishell_structs.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
