@@ -3,10 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_structs.h                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 15:35:46 by itaharbo          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2025/06/07 16:37:52 by itaharbo         ###   ########.fr       */
+=======
+/*   Updated: 2025/06/04 17:21:16 by raisufaj         ###   ########.fr       */
+>>>>>>> 5a83f9f7254e39d67d6951f2512ebcb956b85dc8
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +31,8 @@ typedef enum e_token_type
 
 typedef struct s_token
 {
-	t_token_type	value;
-	char			*type;
+	t_token_type	type;
+	char			*value;
 	struct s_token	*next;
 }	t_token;
 
