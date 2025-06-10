@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:50:56 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/10 14:51:08 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/06/10 15:27:23 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,47 +29,6 @@ void	handle_escape(const char *input, int *i, char **buffer)
 	free(part);
 	*buffer = tmp;
 	(*i)++;
-}
-
-void	handle_qoute(const char *input, int *i, char **buffer)
-{
-	int		start;
-	char	quote;
-	char	*part;
-	char	*tmp;
-
-	quote = input[*i];
-	(*i)++;
-	start = *i;
-	while (input[*i] && input[*i] != quote)
-	{
-		if (quote == '"' && input[*i] == '\\' && input[*i + 1])
-		{
-			if (*i > start)
-			{
-				part = ft_strndup(input + start, (*i) - start);
-				tmp = ft_strjoin(*buffer, part);
-				free(*buffer);
-				free(part);
-				*buffer = tmp;
-			}
-			(*i)++;
-			handle_escape(input, i, buffer);
-			start = *i;
-		}
-		else
-			(*i)++;
-	}
-	if (*i > start)
-	{
-		part = ft_strndup(input + start, (*i) - start);
-		tmp = ft_strjoin(*buffer, part);
-		free(*buffer);
-		free(part);
-		*buffer = tmp;
-	}
-	if (input[*i] == quote)
-		(*i)++;
 }
 
 void	handle_unquoted(const char *input, int *i, char **buffer)

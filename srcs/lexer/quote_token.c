@@ -6,32 +6,35 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:50:44 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/10 14:52:05 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/06/10 15:37:16 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 #include "../../includes/minishell_structs.h"
 
-char	*join_and_free(char *s1, char *s2)
+static void	append_segment(const char *input, int start, int end, char **buffer)
 {
-	char	*joined;
-	size_t	total_len;
+	char	*part;
+	char	*tmp;
 
-	total_len = ft_strlen(s1) + ft_strlen(s2) + 1;
-	joined = malloc(sizeof(char) * total_len);
-	if (!joined)
-	{
-		free(s1);
-		free(s2);
-		exit(1);
-	}
-	joined[0] = '\0';
-	ft_strlcat(joined, s1, total_len);
-	ft_strlcat(joined, s2, total_len);
-	free(s1);
-	free(s2);
-	return (joined);
+	part = ft_strndup(input + start, end - start);
+	if (!part)
+		return ;
+	tmp = ft_strjoin(*buffer, part);
+	free(*buffer);
+	free(part);
+	*buffer = tmp;
+}
+
+static void	handle_escape_sequence(const char *input, int *i, int *start,
+		char **buffer)
+{
+	if (*i > *start)
+		append_segment(input, *start, *i, buffer);
+	(*i)++;
+	handle_escape(input, i, buffer);
+	*start = *i;
 }
 
 char	*concat_quote(const char *input, int *i, char *quoted)
@@ -47,4 +50,25 @@ char	*concat_quote(const char *input, int *i, char *quoted)
 		return (quoted);
 	after = ft_substr(input, start, *i - start);
 	return (join_and_free(quoted, after));
+}
+
+void	handle_qoute(const char *input, int *i, char **buffer)
+{
+	int		start;
+	char	quote;
+
+	quote = input[*i];
+	(*i)++;
+	start = *i;
+	while (input[*i] && input[*i] != quote)
+	{
+		if (quote == '"' && input[*i] == '\\' && input[*i + 1])
+			handle_escape_sequence(input, i, &start, buffer);
+		else
+			(*i)++;
+	}
+	if (*i > start)
+		append_segment(input, start, *i, buffer);
+	if (input[*i] == quote)
+		(*i)++;
 }
