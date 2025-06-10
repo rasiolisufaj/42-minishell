@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:50:44 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/10 15:37:16 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/06/10 17:41:52 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ static void	handle_escape_sequence(const char *input, int *i, int *start,
 {
 	if (*i > *start)
 		append_segment(input, *start, *i, buffer);
-	(*i)++;
+	else
+		(*i)++;
 	handle_escape(input, i, buffer);
 	*start = *i;
 }
@@ -52,7 +53,7 @@ char	*concat_quote(const char *input, int *i, char *quoted)
 	return (join_and_free(quoted, after));
 }
 
-void	handle_qoute(const char *input, int *i, char **buffer)
+void	handle_quote(const char *input, int *i, char **buffer)
 {
 	int		start;
 	char	quote;

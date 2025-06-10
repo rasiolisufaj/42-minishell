@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:50:56 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/10 15:27:23 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/06/10 17:42:26 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void	word_token(const char *input, int *i, t_token *new_token)
 		if (input[*i] == '\\' && input[*i + 1])
 			handle_escape(input, i, &buffer);
 		else if (input[*i] == '\'' || input[*i] == '"')
-			handle_qoute(input, i, &buffer);
+			handle_quote(input, i, &buffer);
 		else
 			handle_unquoted(input, i, &buffer);
 	}
