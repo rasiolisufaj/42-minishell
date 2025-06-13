@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 15:35:46 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/06/10 20:41:23 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/06/12 20:14:03 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ typedef struct s_node
 	struct s_node	*left;
 	struct s_node	*right;
 	t_token			*tokens;
+	t_token			*redir_list;
 }	t_node;
 
 #endif
