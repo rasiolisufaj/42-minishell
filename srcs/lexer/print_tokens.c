@@ -1,7 +1,7 @@
 #include "../../includes/minishell.h"
 #include "../../includes/minishell_structs.h"
 
-int	main(void)
+/*int	main(void)
 {
 	char	buffer[1024];
 	t_token	*tokens;
@@ -23,4 +23,13 @@ int	main(void)
 	}
 	free_tokens(tokens);
 	return (0);
+}*/
+
+void	print_tokens(t_token *tokens)
+{
+	while (tokens)
+	{
+		printf("Token: %s, Type: %d\n", tokens->value, tokens->type);
+		tokens = tokens->next;
+	}
 }

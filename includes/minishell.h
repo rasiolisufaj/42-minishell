@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/15 17:44:22 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/06/15 23:05:08 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,9 @@
 # include <unistd.h>
 # include <signal.h>
 
+// MACROS
+# define PROMPT "minishell> "
+
 //PARSER
 t_node	*parse_cmd(t_token **tokens);
 
@@ -48,11 +51,21 @@ void	handle_escape(const char *input, int *i, char **buffer);
 void	handle_unquoted(const char *input, int *i, char **buffer);
 void	word_token(const char *input, int *i, t_token *new_token);
 
+// PROMPT
+char	*get_prompt(void);
+
 // UTILS
 void	parser_error(const char *msg);
 int		is_space(char c);
 int		is_operator(char c);
 char	*join_and_free(char *s1, char *s2);
 char	*ft_strndup(const char *src, size_t n);
+
+// SIGNALS
+void	sigint_handler(int signo);
+void	setup_signals(void);
+
+// PRINT TOKENS
+void	print_tokens(t_token *tokens);
 
 #endif
