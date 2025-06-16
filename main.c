@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:14:55 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/15 23:13:25 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/06/16 12:05:40 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,15 @@ int	main(int argc, char **argv, char **envp)
 			continue ;
 		tokens = lexer(line);
 		if (tokens)
-			print_tokens(tokens);
+			print_tokens(tokens); // This is temporary for checking LEXER output
 		else
 		{
 			printf("Error: Failed to tokenize input.\n");
 			free(line);
 			continue ;
 		}
+		// TODO: parse_tokens(tokens)
+		// TODO: execute_commands(parsed_cmds)
 		free_tokens(tokens);
 		free(line);
 	}
