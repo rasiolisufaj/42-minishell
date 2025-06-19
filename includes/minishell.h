@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
+/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/15 23:05:08 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/06/19 22:08:53 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # include <sys/ioctl.h>
 # include <sys/stat.h>
 # include <sys/types.h>
+# include <sys/wait.h>
 # include <term.h>
 # include <termios.h>
 # include <unistd.h>
@@ -35,6 +36,8 @@
 
 //PARSER
 t_node	*parse_cmd(t_token **tokens);
+t_node	*parse_and_or(t_token **tokens);
+t_node	*parse_pipe(t_token **tokens);
 
 // LEXER
 t_token	*lexer(const char *input);
@@ -43,6 +46,7 @@ void	redir_great_token(const char *input, int *i, t_token *new_token);
 void	redir_less_token(const char *input, int *i, t_token *new_token);
 void	pipe_token(const char *input, int *i, t_token *new_token);
 void	free_tokens(t_token *token);
+void	free_node(t_node *node);
 void	head_or_tail(t_token **head, t_token **tail, t_token *new_token);
 void	tokenizer(const char *input, int *i, t_token *new_token);
 char	*concat_quote(const char *input, int *i, char *quoted);
@@ -66,6 +70,6 @@ void	sigint_handler(int signo);
 void	setup_signals(void);
 
 // PRINT TOKENS
-void	print_tokens(t_token *tokens);
+//void	print_tokens(t_token *tokens);
 
 #endif

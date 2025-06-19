@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:27 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/12 21:02:35 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/06/19 22:05:57 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,14 +100,77 @@ t_token	*dup_token_range(t_token *start, t_token *end)
 	return (head);
 }
 
-/*t_node	parse_group(t_token **tokens)
+t_node	*parse_pipe(t_token **tokens)
 {
-	
-}*/
+	return (parse_cmd(tokens));
+}
+
+t_node	*parse_and_or(t_token **tokens)
+{
+	t_node			*left;
+	t_node			*right;
+	t_node			*node;
+	t_token_type	type;
+
+	if (!tokens)
+		return (NULL);
+	left = parse_pipe(tokens);
+	if (!left)
+		return (NULL);
+	while (*tokens && ((*tokens)->type == T_AND || (*tokens)->type == T_OR))
+	{
+		type = (*tokens)->type;
+		(*tokens) = (*tokens)->next;
+		right = parse_pipe(tokens);
+		if (!right)
+		{
+			free_node(left);
+			parser_error("syntax error: expected command after '&&' or '||'");
+			return (NULL);
+		}
+		if (type == T_AND)
+			node = create_node(N_AND);
+		else
+			node = create_node(N_OR);
+		if (!node)
+		{
+			free_node(left);
+			free_node(right);
+			return (NULL);
+		}
+		node->left = left;
+		node->right = right;
+		left = node;
+	}
+	return (left);
+}
+
+t_node	*parse_group(t_token **tokens)
+{
+	t_node	*group;
+
+	if (!tokens || !(*tokens) || (*tokens)->type != T_PAREN_OPEN)
+		parser_error("syntax error: expected '('");
+	(*tokens) = (*tokens)->next;
+	group = create_node(N_GROUP);
+	if (!group)
+		return (NULL);
+	group->left = parse_and_or(tokens);
+	if (!group->left)
+		return (free(group), NULL);
+	if (!(*tokens) || (*tokens)->type != T_PAREN_CLOSE)
+	{
+//		free_node(group);
+//		free(group);
+		parser_error("syntax error: expected ')'");
+	}
+	(*tokens) = (*tokens)->next;
+	return (group);
+}
 
 t_node	*parse_cmd(t_token **tokens)
 {
-	t_token	*start;
+//	t_token	*start;
 	t_token	*args_head;
 	t_token	*args_tail;
 	t_token	*redir_head;
@@ -120,9 +183,9 @@ t_node	*parse_cmd(t_token **tokens)
 	args_tail = NULL;
 	redir_head = NULL;
 	redir_tail = NULL;
-//	if (*tokens && (*tokens)->type == T_PAREN_OPEN)
-//		return (parse_group(tokens));
-	start = *tokens;
+	if (*tokens && (*tokens)->type == T_PAREN_OPEN)
+		return (parse_group(tokens));
+//	start = *tokens;
 	while (*tokens && ((*tokens)->type == T_WORD
 			|| is_redirection((*tokens)->type)))
 	{

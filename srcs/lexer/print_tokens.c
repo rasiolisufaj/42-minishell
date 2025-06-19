@@ -23,7 +23,7 @@
 	}
 	free_tokens(tokens);
 	return (0);
-}*/
+}
 
 void	print_tokens(t_token *tokens)
 {
@@ -32,4 +32,4 @@ void	print_tokens(t_token *tokens)
 		printf("Token: %s, Type: %d\n", tokens->value, tokens->type);
 		tokens = tokens->next;
 	}
-}
+}*/
