@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:27 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/19 22:05:57 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/06/20 18:50:47 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,41 +63,6 @@ void	parser_error(const char *msg)
 {
 	fprintf(stderr, "minishell: %s\n", msg);
 	exit(EXIT_FAILURE);
-}
-
-t_token	*dup_token_range(t_token *start, t_token *end)
-{
-	t_token	*new_token;
-	t_token	*head;
-	t_token	*tail;
-
-	head = NULL;
-	tail = NULL;
-	if (!start)
-		return (NULL);
-	while (start != end)
-	{
-		new_token = malloc(sizeof(t_token));
-		if (!new_token)
-			return (fprintf(stderr, "Malloc has failed\n"),
-				free_tokens(head), NULL);
-		new_token->type = start->type;
-		new_token->value = ft_strdup(start->value);
-		if (!new_token->value)
-		{
-			fprintf(stderr,
-				"Error: memory allocation failed for token value\n");
-			return (free(new_token), free_tokens(head), NULL);
-		}
-		new_token->next = NULL;
-		if (!head)
-			head = new_token;
-		else
-			tail->next = new_token;
-		tail = new_token;
-		start = start->next;
-	}
-	return (head);
 }
 
 t_node	*parse_pipe(t_token **tokens)
@@ -160,8 +125,8 @@ t_node	*parse_group(t_token **tokens)
 		return (free(group), NULL);
 	if (!(*tokens) || (*tokens)->type != T_PAREN_CLOSE)
 	{
-//		free_node(group);
-//		free(group);
+		free_node(group);
+		free(group);
 		parser_error("syntax error: expected ')'");
 	}
 	(*tokens) = (*tokens)->next;
@@ -170,7 +135,6 @@ t_node	*parse_group(t_token **tokens)
 
 t_node	*parse_cmd(t_token **tokens)
 {
-//	t_token	*start;
 	t_token	*args_head;
 	t_token	*args_tail;
 	t_token	*redir_head;
@@ -185,7 +149,6 @@ t_node	*parse_cmd(t_token **tokens)
 	redir_tail = NULL;
 	if (*tokens && (*tokens)->type == T_PAREN_OPEN)
 		return (parse_group(tokens));
-//	start = *tokens;
 	while (*tokens && ((*tokens)->type == T_WORD
 			|| is_redirection((*tokens)->type)))
 	{
@@ -224,24 +187,34 @@ void	free_node(t_node *node)
 	free(node);
 }
 
-/*t_node	*parsing_file(const char *input)
+
+t_node	*parsing_file(const char *input)
 {
 	t_token	*tokens;
-	t_token	*current;
-	t_node	*root;
+	t_token	*tokens_head;
+	t_node	*ast;
 
 	tokens = lexer(input);
 	if (!tokens)
 	{
-		fprintf(stderr, "Error: Lexer failed\n");
+		parser_error("Error: Lexer failed");
 		return (NULL);
 	}
-	current = tokens;
-	root = NULL;
-	while (current)
+	tokens_head = tokens;
+	ast = parse_and_or(&tokens);
+	if (!ast)
 	{
-		current = current->next;
+		free_tokens(tokens_head);
+		parser_error("syntax error: invalid input");
+		return (NULL);
 	}
-	free_tokens(tokens);
-	return (root);
-}*/
+	if (tokens)
+	{
+		free_node(ast);
+		free_tokens(tokens_head);
+		parser_error("syntax error: unexpected token after cmd");
+		return (NULL);
+	}
+	free_tokens(tokens_head);
+	return (ast);
+}

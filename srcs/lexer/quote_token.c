@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   quote_token.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
+/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:50:44 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/10 17:41:52 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/06/20 18:51:04 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,8 @@ void	handle_quote(const char *input, int *i, char **buffer)
 		else
 			(*i)++;
 	}
+	if (input[*i] == '\0')
+		parser_error("syntax_error: unclosed quote");
 	if (*i > start)
 		append_segment(input, start, *i, buffer);
 	if (input[*i] == quote)
