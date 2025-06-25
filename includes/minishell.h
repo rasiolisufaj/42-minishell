@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/19 22:08:53 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/06/24 07:31:14 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,14 @@
 // MACROS
 # define PROMPT "minishell> "
 
+//EXPAND
+char	*expand_token(char *value, t_env *env, int last_status);
+char	*get_env_value(t_env *env, char *name);
+void	expand_ast(t_node *node, t_env *env, int last_status);
+
 //PARSER
 t_node	*parse_cmd(t_token **tokens);
-t_node	*parse_and_or(t_token **tokens);
-t_node	*parse_pipe(t_token **tokens);
+t_node	*parsing_file(const char *input, t_env *env, int last_status);
 
 // LEXER
 t_token	*lexer(const char *input);

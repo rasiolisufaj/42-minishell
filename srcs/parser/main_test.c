@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 19:21:34 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/06/19 22:40:16 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/06/23 23:12:01 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,9 @@ void	print_tokens(const char *label, t_token *tok)
     printf("%s\n", label);
     while (tok)
     {
-        printf("  [%s] \"%s\"\n", token_type_to_str(tok->type), tok->value);
+        printf("  [%s] %s %s\n", token_type_to_str(tok->type), tok->value, 
+			   tok->quote == Q_SINGLE ? "SINGLE" :
+			   tok->quote == Q_DOUBLE ? "DOUBLE" : "NONE");
         tok = tok->next;
     }
 }

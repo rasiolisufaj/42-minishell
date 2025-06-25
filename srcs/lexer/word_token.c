@@ -3,33 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   word_token.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
+/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:50:56 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/10 17:42:26 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/06/24 07:45:38 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 #include "../../includes/minishell_structs.h"
-
-void	handle_escape(const char *input, int *i, char **buffer)
-{
-	char	*part;
-	char	*tmp;
-
-	part = malloc(2);
-	if (!part)
-		exit(1);
-	(*i)++;
-	part[0] = input[*i];
-	part[1] = '\0';
-	tmp = ft_strjoin(*buffer, part);
-	free(*buffer);
-	free(part);
-	*buffer = tmp;
-	(*i)++;
-}
 
 void	handle_unquoted(const char *input, int *i, char **buffer)
 {
@@ -39,7 +21,7 @@ void	handle_unquoted(const char *input, int *i, char **buffer)
 
 	start = *i;
 	while (input[*i] && !is_space(input[*i]) && !is_operator(input[*i])
-		&& input[*i] != '\'' && input[*i] != '"' && input[*i] != '\\')
+		&& input[*i] != '\'' && input[*i] != '"')
 		(*i)++;
 	if (*i > start)
 	{
@@ -61,12 +43,14 @@ void	word_token(const char *input, int *i, t_token *new_token)
 	buffer[0] = '\0';
 	while (input[*i] && !is_space(input[*i]) && !is_operator(input[*i]))
 	{
-		if (input[*i] == '\\' && input[*i + 1])
-			handle_escape(input, i, &buffer);
-		else if (input[*i] == '\'' || input[*i] == '"')
+		if (input[*i] == '\'' || input[*i] == '"')
 			handle_quote(input, i, &buffer);
 		else
+		{
 			handle_unquoted(input, i, &buffer);
+			if (input[*i] && is_space(input[*i]))
+				break ;
+		}
 	}
 	new_token->type = T_WORD;
 	new_token->value = buffer;

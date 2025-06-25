@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:27 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/20 18:50:47 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/06/24 13:19:15 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ static void	append_token(t_token **head, t_token **tail, t_token *src)
 	{
 		free(n);
 		parser_error("strdup failed in append_token");
+		return ;
 	}
 	n->next = NULL;
 	if (!*head)
@@ -62,15 +63,14 @@ t_node	*create_node(t_node_type ope)
 void	parser_error(const char *msg)
 {
 	fprintf(stderr, "minishell: %s\n", msg);
-	exit(EXIT_FAILURE);
 }
 
-t_node	*parse_pipe(t_token **tokens)
+static t_node	*parse_pipe(t_token **tokens)
 {
 	return (parse_cmd(tokens));
 }
 
-t_node	*parse_and_or(t_token **tokens)
+static t_node	*parse_and_or(t_token **tokens)
 {
 	t_node			*left;
 	t_node			*right;
@@ -91,7 +91,6 @@ t_node	*parse_and_or(t_token **tokens)
 		{
 			free_node(left);
 			parser_error("syntax error: expected command after '&&' or '||'");
-			return (NULL);
 		}
 		if (type == T_AND)
 			node = create_node(N_AND);
@@ -110,7 +109,7 @@ t_node	*parse_and_or(t_token **tokens)
 	return (left);
 }
 
-t_node	*parse_group(t_token **tokens)
+static t_node	*parse_group(t_token **tokens)
 {
 	t_node	*group;
 
@@ -187,8 +186,7 @@ void	free_node(t_node *node)
 	free(node);
 }
 
-
-t_node	*parsing_file(const char *input)
+t_node	*parsing_file(const char *input, t_env *env, int last_status)
 {
 	t_token	*tokens;
 	t_token	*tokens_head;
@@ -215,6 +213,8 @@ t_node	*parsing_file(const char *input)
 		parser_error("syntax error: unexpected token after cmd");
 		return (NULL);
 	}
+	expand_ast(ast, env, last_status);
+	expand__wildcards(ast);
 	free_tokens(tokens_head);
 	return (ast);
 }
