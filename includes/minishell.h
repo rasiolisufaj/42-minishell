@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/24 07:31:14 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/06/26 22:40:58 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@
 char	*expand_token(char *value, t_env *env, int last_status);
 char	*get_env_value(t_env *env, char *name);
 void	expand_ast(t_node *node, t_env *env, int last_status);
+void	expand_wildcards(t_node *node);
 
 //PARSER
 t_node	*parse_cmd(t_token **tokens);
@@ -55,7 +56,6 @@ void	head_or_tail(t_token **head, t_token **tail, t_token *new_token);
 void	tokenizer(const char *input, int *i, t_token *new_token);
 char	*concat_quote(const char *input, int *i, char *quoted);
 void	handle_quote(const char *input, int *i, char **buffer);
-void	handle_escape(const char *input, int *i, char **buffer);
 void	handle_unquoted(const char *input, int *i, char **buffer);
 void	word_token(const char *input, int *i, t_token *new_token);
 
@@ -68,6 +68,7 @@ int		is_space(char c);
 int		is_operator(char c);
 char	*join_and_free(char *s1, char *s2);
 char	*ft_strndup(const char *src, size_t n);
+int		ft_strcmp(const char *s1, const char *s2);
 
 // SIGNALS
 void	sigint_handler(int signo);

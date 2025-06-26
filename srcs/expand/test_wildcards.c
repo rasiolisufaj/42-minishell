@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 16:50:50 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/06/24 16:55:32 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/06/26 22:05:09 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ int main(void)
 
     // Chaînons manuellement quelques tokens : "foo", "bar*", "*baz", "qux"
     t_token *head = NULL, *tail = NULL;
-    const char *tests[] = { "foo", "bar*", "*baz", "qux", NULL };
+    const char *tests[] = { "foo", "bar*", "*baz", "qux", "*", NULL };
     for (int i = 0; tests[i]; i++)
     {
         t_token *tok = new_token(tests[i]);

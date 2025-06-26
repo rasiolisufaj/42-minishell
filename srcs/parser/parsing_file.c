@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:27 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/24 13:19:15 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/06/26 22:28:46 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,7 +214,7 @@ t_node	*parsing_file(const char *input, t_env *env, int last_status)
 		return (NULL);
 	}
 	expand_ast(ast, env, last_status);
-	expand__wildcards(ast);
+	expand_wildcards(ast);
 	free_tokens(tokens_head);
 	return (ast);
 }

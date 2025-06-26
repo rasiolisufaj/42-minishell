@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 02:56:14 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/06/24 09:35:25 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/06/26 22:29:36 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,17 +16,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-
-// Fonction simplifiée pour récupérer une valeur d'environnement
-char *get_env_value(t_env *env, char *name) {
-    if (strcmp(name, "USER") == 0)
-        return "idrisstaharbouche";
-    if (strcmp(name, "HOME") == 0)
-        return "/Users/idrisstaharbouche";
-    if (strcmp(name, "US") == 0)
-        return "";
-    return NULL;
-}
 
 // Création d'un token pour les tests
 t_token *create_test_token(char *value) {
