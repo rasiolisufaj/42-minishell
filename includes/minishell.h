@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/26 22:40:58 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/06/30 22:23:50 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,17 +30,35 @@
 # include <termios.h>
 # include <unistd.h>
 # include <signal.h>
+# include <stdbool.h>
 
 // MACROS
 # define PROMPT "minishell> "
+# define EXIT_SUCCESS 0
+# define EXIT_FAILURE 1
 
-//EXPAND
+extern int	g_signal;
+
+// EXECUTOR
+int		execute(t_node *ast, t_env **env);
+int		exec_cmd(t_node *ast, t_env **env);
+int		exec_pipe(t_node *ast, t_env **env);
+int		exec_and(t_node *ast, t_env **env);
+int		exec_or(t_node *ast, t_env **env);
+int		exec_group(t_node *ast, t_env **env);
+
+// BUILTINS
+int		pwd_exec(void);
+int		cd_exec(t_cmd *cmd);
+int		exit_cmd(char *input);
+
+// EXPAND
 char	*expand_token(char *value, t_env *env, int last_status);
 char	*get_env_value(t_env *env, char *name);
 void	expand_ast(t_node *node, t_env *env, int last_status);
 void	expand_wildcards(t_node *node);
 
-//PARSER
+// PARSER
 t_node	*parse_cmd(t_token **tokens);
 t_node	*parsing_file(const char *input, t_env *env, int last_status);
 

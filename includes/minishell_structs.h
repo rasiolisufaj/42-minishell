@@ -6,13 +6,14 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 15:35:46 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/06/24 07:45:01 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/06/30 22:24:06 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_STRUCTS_H
 # define MINISHELL_STRUCTS_H
 
+# include <stdbool.h>
 typedef enum e_token_type
 {
 	T_WORD,
@@ -56,7 +57,14 @@ typedef struct s_env
 {
 	char			*key;
 	char			*value;
+	bool			exported;
 	struct s_env	*next;
 }	t_env;
+
+typedef struct s_cmd
+{
+	char	**args;
+	int		ac;
+}	t_cmd;
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 22:56:10 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/16 15:25:41 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/06/28 17:36:05 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	sigint_handler(int signo)
 {
 	(void)signo;
 	rl_replace_line("", 0);
-	write(1, "\n", 1);
+	printf("\n");
 	rl_on_new_line();
 	rl_redisplay();
 }
