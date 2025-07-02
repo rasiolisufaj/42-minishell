@@ -6,14 +6,14 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:27 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/01 17:48:21 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/02 18:13:58 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 #include "../../includes/minishell_structs.h"
 
-void	parser_error(const char *msg)
+void	parser_error(char *msg)
 {
 	ft_putstr_fd("minishell: ", 2);
 	ft_putendl_fd(msg, 2);
@@ -75,8 +75,16 @@ static t_node	*parse_and_or(t_token **tokens)
 	t_node			*node;
 	t_token_type	type;
 
-	if (!tokens)
+	if (!tokens || !(*tokens))
 		return (NULL);
+	if ((*tokens)->type == T_AND || (*tokens)->type == T_OR)
+	{
+		if ((*tokens)->type == T_AND)
+			parser_error("syntax error near unexpected token '&&'");
+		else
+			parser_error("syntax error near unexpected token '||'");
+		return (NULL);
+	}
 	left = parse_pipe(tokens);
 	if (!left)
 		return (NULL);
@@ -88,7 +96,11 @@ static t_node	*parse_and_or(t_token **tokens)
 		if (!right)
 		{
 			free_node(left);
-			parser_error("syntax error: expected command after '&&' or '||'");
+			if (type == T_AND)
+				parser_error("syntax error near unexpected token '&&'");
+			else
+				parser_error("syntax error near unexpected token '||'");
+			return (NULL);
 		}
 		if (type == T_AND)
 			node = create_node(N_AND);
@@ -112,7 +124,7 @@ static t_node	*parse_group(t_token **tokens)
 	t_node	*group;
 
 	if (!tokens || !(*tokens) || (*tokens)->type != T_PAREN_OPEN)
-		parser_error("syntax error: expected '('");
+		return (parser_error("syntax error: expected '('"), NULL);
 	(*tokens) = (*tokens)->next;
 	group = create_node(N_GROUP);
 	if (!group)
@@ -123,8 +135,7 @@ static t_node	*parse_group(t_token **tokens)
 	if (!(*tokens) || (*tokens)->type != T_PAREN_CLOSE)
 	{
 		free_node(group);
-		free(group);
-		parser_error("syntax error: expected ')'");
+		return(parser_error("syntax error: expected ')'"), NULL);
 	}
 	(*tokens) = (*tokens)->next;
 	return (group);
@@ -159,7 +170,12 @@ t_node	*parse_cmd(t_token **tokens)
 				(*tokens) = (*tokens)->next;
 			}
 			else
+			{
+				free_tokens(args_head);
+				free_tokens(redir_head);
 				parser_error("syntax error after redirection");
+				return (NULL);
+			}
 		}
 		else
 		{
@@ -196,8 +212,7 @@ t_node	*parsing_file(const char *input, t_env *env, int last_status)
 	tokens_head = tokens;
 	ast = parse_and_or(&tokens);
 	if (!ast)
-		return (free_tokens(tokens_head), 
-			parser_error("syntax error: invalid input"), NULL);
+		return (free_tokens(tokens_head), NULL);
 	if (tokens)
 	{
 		free_node(ast);

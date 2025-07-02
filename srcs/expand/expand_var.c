@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 16:28:38 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/01 20:29:33 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/02 17:11:28 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ static char	*consume_single_quote(char *value, int *i)
 		(*i)++;
 	part = ft_strndup(value + start, *i - start);
 	if (!part)
-		return (ft_putendl(
+		return (ft_putendl_fd(
 			"Error: Memory allocation failed in consume_single_quote", 2), NULL);
 	if (value[*i] == '\'')
 		(*i)++;

@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/01 23:22:45 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/02 17:08:06 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ void	word_token(const char *input, int *i, t_token *new_token);
 char	*get_prompt(void);
 
 // UTILS
-void	parser_error(const char *msg);
+void	parser_error(char *msg);
 int		is_space(char c);
 int		is_operator(char c);
 char	*join_and_free(char *s1, char *s2);
