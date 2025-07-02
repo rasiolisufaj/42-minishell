@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 16:50:50 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/06/26 22:05:09 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/01 20:28:51 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../../includes/minishell_structs.h"
-
-// Stub de handle_joker : renvoie toujours NULL pour l'instant
-/*t_token *handle_joker(const char *pattern)
-{
-    (void)pattern;
-    return NULL;
-}*/
 
 // Prototype de ta fonction
 void wildcards_cmd(t_node *node);

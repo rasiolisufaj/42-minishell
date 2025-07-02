@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 09:38:42 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/06/26 22:26:25 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/01 23:28:37 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,19 +98,11 @@ t_token	*handle_joker(char *str)
 		{
 			tokens = malloc(sizeof(t_token));
 			if (!tokens)
-			{
-				perror("malloc");
-				closedir(dir);
-				return (NULL);
-			}
+				return (perror("malloc"), closedir(dir), NULL);
 			tokens->value = strdup(entry->d_name);
 			if (!tokens->value)
-			{
-				free(tokens);
-				perror("strdup");
-				closedir(dir);
-				return (NULL);
-			}
+				return (free(tokens), perror("strdup"),
+					closedir(dir), NULL);
 			tokens->type = T_WORD;
 			tokens->next = NULL;
 			if (!head)

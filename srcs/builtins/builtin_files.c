@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:25:12 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/30 22:50:49 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/01 17:30:28 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,14 +99,16 @@ int	pwd_exec(void)
 	return (EXIT_SUCCESS);
 }
 
-int	export(t_cmd *cmd, t_env *env)
+int	export_cmd(t_cmd *cmd, t_env *env)
 {
 	int	i;
 
 	if (env == NULL)
 		return (EXIT_FAILURE);
 	if (cmd->ac == 1)
-		return (env_cmd(env));
+	{
+		
+	}
 	else
 	{
 		

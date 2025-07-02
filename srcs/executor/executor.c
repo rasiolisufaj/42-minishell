@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:55 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/30 21:24:37 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/01 17:47:40 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ int	execute(t_node *ast, t_env **env)
 	else if (ast->type == N_GROUP)
 		return (exec_group(ast, env));
 	else
-		return (fprintf(stderr,
-			"Error: Unknown AST node type %d\n", ast->type), 1);
+		return (ft_putstr_fd(
+			"Error: Unknown AST node type ", 2), ft_putendl_fd(ast->type, 2), 1);
 	return (127);
 }

@@ -6,12 +6,18 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:27 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/26 22:28:46 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/01 17:48:21 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 #include "../../includes/minishell_structs.h"
+
+void	parser_error(const char *msg)
+{
+	ft_putstr_fd("minishell: ", 2);
+	ft_putendl_fd(msg, 2);
+}
 
 bool	is_redirection(t_token_type type)
 {
@@ -48,21 +54,13 @@ t_node	*create_node(t_node_type ope)
 
 	new_node = malloc(sizeof(t_node));
 	if (!new_node)
-	{
-		fprintf(stderr, "Error: Memory allocation failed\n");
-		return (NULL);
-	}
+		return (ft_putendl_fd("Error: Memory allocation failed", 2), NULL);
 	new_node->type = ope;
 	new_node->left = NULL;
 	new_node->right = NULL;
 	new_node->tokens = NULL;
 	new_node->redir_list = NULL;
 	return (new_node);
-}
-
-void	parser_error(const char *msg)
-{
-	fprintf(stderr, "minishell: %s\n", msg);
 }
 
 static t_node	*parse_pipe(t_token **tokens)
@@ -194,18 +192,12 @@ t_node	*parsing_file(const char *input, t_env *env, int last_status)
 
 	tokens = lexer(input);
 	if (!tokens)
-	{
-		parser_error("Error: Lexer failed");
-		return (NULL);
-	}
+		return (parser_error("Error: Lexer failed"), NULL);
 	tokens_head = tokens;
 	ast = parse_and_or(&tokens);
 	if (!ast)
-	{
-		free_tokens(tokens_head);
-		parser_error("syntax error: invalid input");
-		return (NULL);
-	}
+		return (free_tokens(tokens_head), 
+			parser_error("syntax error: invalid input"), NULL);
 	if (tokens)
 	{
 		free_node(ast);

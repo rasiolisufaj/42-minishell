@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:46:23 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/11 20:48:44 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/01 17:11:06 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	tokenizer(const char *input, int *i, t_token *new_token)
 	}
 	else if (input[*i] == '&')
 	{
-		fprintf(stderr, "Error: '&' is not a valid token\n");
+		ft_putendl_fd("Error: '&' is not a valid token", 2);
 		exit(1);
 	}
 	else if (input[*i] == '(' || input[*i] == ')')

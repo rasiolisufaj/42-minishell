@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   all_utilities.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
+/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:25:54 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/10 15:26:30 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/01 20:29:15 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,16 @@ int	is_operator(char c)
 {
 	return (c == '>' || c == '<' || c == '&' || c == '|' || c == '('
 		|| c == ')');
+}
+
+int	ft_strcmp(const char *s1, const char *s2)
+{
+	while (*s1 && *s2 && *s1 == *s2)
+	{
+		s1++;
+		s2++;
+	}
+	return (*s1 - *s2);
 }
 
 char	*ft_strndup(const char *src, size_t n)

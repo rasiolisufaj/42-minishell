@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/30 22:23:50 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/01 23:22:45 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,11 @@ int		exec_group(t_node *ast, t_env **env);
 // BUILTINS
 int		pwd_exec(void);
 int		cd_exec(t_cmd *cmd);
-int		exit_cmd(char *input);
+int		exit_exec(t_cmd *cmd, t_env **env);
+int		export_exec(t_cmd *cmd, t_env **env);
+
+// ENV
+t_env	*env_node(void);
 
 // EXPAND
 char	*expand_token(char *value, t_env *env, int last_status);

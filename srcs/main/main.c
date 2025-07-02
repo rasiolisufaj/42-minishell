@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:14:55 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/30 22:24:36 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/01 17:47:59 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,24 +58,25 @@ t_env	*init_env(char **envp)
 		eq_sign = ft_strchr(envp[i], '=');
 		if (!eq_sign)
 		{
-			fprintf(stderr,
-				"minishell: invalid environment variable: %s\n", envp[i]);
+			ft_putstr_fd(
+				"minishell: invalid environment variable: ", 2);
+			ft_putendl_fd(envp[i], 2);
 			i++;
 			continue ;
 		}
 		new_env = env_node();
 		if (!new_env)
-			return (free_env(env), fprintf(stderr,
-					"minishell: memory allocation failed\n"), NULL);
+			return (free_env(env), ft_putendl_fd(
+					"minishell: memory allocation failed", 2), NULL);
 		len = eq_sign - envp[i];
 		new_env->key = ft_substr(envp[i], 0, len);
 		if (!new_env->key)
-			return (free(new_env), free_env(env), fprintf(stderr,
-					"minishell: memory allocation failed\n"), NULL);
+			return (free(new_env), free_env(env), ft_putendl_fd(
+					"minishell: memory allocation failed", 2), NULL);
 		new_env->value = ft_strdup(eq_sign + 1);
 		if (!new_env->value)
 			return (free(new_env->key), free(new_env), free_env(env),
-				fprintf(stderr, "minishell: memory allocation failed\n"), NULL);
+				ft_putendl_fd("minishell: memory allocation failed", 2), NULL);
 		new_env->next = env;
 		env = new_env;
 		i++;
