@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:55 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/01 17:47:40 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/03 19:10:12 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,27 +16,24 @@
 int	exec_cmd(t_node *ast, t_env **env)
 {
 	t_cmd	*cmd;
+	int		status;
 
 	if (ast == NULL || ast->type != N_CMD)
 		return (1);
-	// init_cmd(ast, &cmd); // Assuming init_cmd is a function that initializes cmd from ast
-	if (ft_strcmp(cmd->args[0], "cd"))
-		return (cd_exec(cmd));
-	else if (ft_strcmp(cmd->args[0], "echo"))
-		return (echo_exec(cmd));
-	else if (ft_strcmp(cmd->args[0], "pwd"))
-		return (pwd_exec());
-	else if (ft_strcmp(cmd->args[0], "export"))
-		return (export_exec(cmd, &env));
-	else if (ft_strcmp(cmd->args[0], "env"))
+	cmd = init_cmd(ast);
+	if (!cmd)
+		return (1);
+	if (handle_redir(ast->redir_list) != 0)
+		return (free_cmd(cmd), 1);
+	if (is_builtin(cmd->args[0]))
 	{
-		if (cmd->ac > 1)
-			return (write(2, "env: too many arguments\n", 24), 1);
-		else
-			return (env_cmd(*env));
+		status = exec_builtin(cmd, env);
+		return (free_cmd(cmd), status);
 	}
-	else if (ft_strcmp(cmd->args[0], "exit"))
-		return (exit_exec(cmd, env));
+	else
+		status = exec_external(cmd, *env);
+	free_cmd(cmd);
+	return (status);
 }
 
 int	exec_pipe(t_node *ast, t_env **env)
