@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   redir_utils.c                                      :+:      :+:    :+:   */
+/*   exec_cmd.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/03 19:05:19 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/03 19:07:23 by itaharbo         ###   ########.fr       */
+/*   Created: 2025/07/04 18:08:07 by itaharbo          #+#    #+#             */
+/*   Updated: 2025/07/04 18:08:57 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,4 +86,24 @@ t_cmd	*init_cmd(t_node *ast)
 	cmd->ac = 0;
 	dup_to_tokens(current, cmd->args, &cmd->ac);
 	return (cmd);
+}
+
+int	exec_cmd(t_node *ast, t_env **env)
+{
+	t_cmd	*cmd;
+	int		status;
+
+	if (ast == NULL || ast->type != N_CMD)
+		return (1);
+	cmd = init_cmd(ast);
+	if (!cmd)
+		return (1);
+	if (handle_redir(ast->redir_list) != 0)
+		return (free_cmd(cmd), 1);
+	if (is_builtin(cmd->args[0]))
+		status = exec_builtin(cmd, env);
+	else
+		status = exec_external(cmd, *env);
+	free_cmd(cmd);
+	return (status);
 }

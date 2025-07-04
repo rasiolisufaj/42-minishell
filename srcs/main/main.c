@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:14:55 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/01 17:47:59 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/04 21:11:25 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,7 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	while (1)
 	{
+		free_node(ast);
 		line = get_prompt();
 		if (!line)
 			break ;
@@ -113,7 +114,6 @@ int	main(int argc, char **argv, char **envp)
 		if (!ast)
 			continue ;
 		g_signal = execute(ast, &env);
-		free_node(ast);
 	}
 	free_env(env);
 	rl_clear_history();

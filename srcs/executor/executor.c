@@ -6,35 +6,12 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:55 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/03 19:10:12 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/04 18:09:04 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 #include "../../includes/minishell_structs.h"
-
-int	exec_cmd(t_node *ast, t_env **env)
-{
-	t_cmd	*cmd;
-	int		status;
-
-	if (ast == NULL || ast->type != N_CMD)
-		return (1);
-	cmd = init_cmd(ast);
-	if (!cmd)
-		return (1);
-	if (handle_redir(ast->redir_list) != 0)
-		return (free_cmd(cmd), 1);
-	if (is_builtin(cmd->args[0]))
-	{
-		status = exec_builtin(cmd, env);
-		return (free_cmd(cmd), status);
-	}
-	else
-		status = exec_external(cmd, *env);
-	free_cmd(cmd);
-	return (status);
-}
 
 int	exec_pipe(t_node *ast, t_env **env)
 {

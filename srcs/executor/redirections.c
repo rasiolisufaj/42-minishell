@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   redir_exec.c                                       :+:      :+:    :+:   */
+/*   redirections.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 19:05:19 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/03 19:08:56 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/04 18:09:46 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,11 @@ int	redir_error(t_token *redir_list)
 		{
 			if (!current->next || current->next->type != T_WORD)
 			{
-				ft_putstr_fd(
-					"minishell: syntax error near unexpected token `", 2);
-				ft_putstr_fd(current->value, 2);
+				ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
+				if (!current->next)
+					ft_putstr_fd("newline", 2);
+				else
+					ft_putstr_fd(current->next->value, 2);
 				ft_putendl_fd("'", 2);
 				return (1);
 			}
