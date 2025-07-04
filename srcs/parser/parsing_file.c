@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_file.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:27 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/02 18:13:58 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/04 15:19:52 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@ void	parser_error(char *msg)
 
 bool	is_redirection(t_token_type type)
 {
-	return (type == T_REDIR_IN || type == T_REDIR_OUT
-		|| type == T_REDIR_APPEND || type == T_HEREDOC);
+	return (type == T_REDIR_IN || type == T_REDIR_OUT || type == T_REDIR_APPEND
+		|| type == T_HEREDOC);
 }
 
 static void	append_token(t_token **head, t_token **tail, t_token *src)
@@ -65,7 +65,37 @@ t_node	*create_node(t_node_type ope)
 
 static t_node	*parse_pipe(t_token **tokens)
 {
-	return (parse_cmd(tokens));
+	t_node	*left;
+	t_node	*right;
+	t_node	*pipe_node;
+
+	if (!tokens || !(*tokens))
+		return (NULL);
+	left = parse_cmd(tokens);
+	if (!left)
+		return (NULL);
+	while (*tokens && (*tokens)->type == T_PIPE)
+	{
+		(*tokens) = (*tokens)->next;
+		right = parse_cmd(tokens);
+		if (!right)
+		{
+			free_node(left);
+			parser_error("syntax error near unexpected token '|'");
+			return (NULL);
+		}
+		pipe_node = create_node(N_PIPE);
+		if (!pipe_node)
+		{
+			free_node(left);
+			free_node(right);
+			return (NULL);
+		}
+		pipe_node->left = left;
+		pipe_node->right = right;
+		left = pipe_node;
+	}
+	return (left);
 }
 
 static t_node	*parse_and_or(t_token **tokens)
@@ -135,7 +165,7 @@ static t_node	*parse_group(t_token **tokens)
 	if (!(*tokens) || (*tokens)->type != T_PAREN_CLOSE)
 	{
 		free_node(group);
-		return(parser_error("syntax error: expected ')'"), NULL);
+		return (parser_error("syntax error: expected ')'"), NULL);
 	}
 	(*tokens) = (*tokens)->next;
 	return (group);
@@ -148,7 +178,7 @@ t_node	*parse_cmd(t_token **tokens)
 	t_token	*redir_head;
 	t_token	*redir_tail;
 	t_node	*node;
-	
+
 	if (!tokens || !*tokens)
 		return (NULL);
 	args_head = NULL;
