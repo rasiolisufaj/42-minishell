@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_structs.h                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 15:35:46 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/06/30 22:24:06 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/04 20:44:30 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ typedef enum e_token_type
 	T_OR,
 	T_PAREN_OPEN,
 	T_PAREN_CLOSE,
+	T_UNKNOWN,
 }	t_token_type;
 
 typedef struct s_token

@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:27 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/04 15:19:52 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/04 20:53:08 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,10 @@ static void	append_token(t_token **head, t_token **tail, t_token *src)
 
 	n = malloc(sizeof(t_token));
 	if (!n)
+	{
 		parser_error("malloc failed in append_token");
+		return ;
+	}
 	n->type = src->type;
 	n->value = ft_strdup(src->value);
 	if (!n->value)
@@ -48,14 +51,14 @@ static void	append_token(t_token **head, t_token **tail, t_token *src)
 	*tail = n;
 }
 
-t_node	*create_node(t_node_type ope)
+t_node	*create_node(t_node_type type)
 {
 	t_node	*new_node;
 
 	new_node = malloc(sizeof(t_node));
 	if (!new_node)
 		return (ft_putendl_fd("Error: Memory allocation failed", 2), NULL);
-	new_node->type = ope;
+	new_node->type = type;
 	new_node->left = NULL;
 	new_node->right = NULL;
 	new_node->tokens = NULL;
@@ -225,6 +228,8 @@ void	free_node(t_node *node)
 {
 	if (!node)
 		return ;
+	free_node(node->left);
+	free_node(node->right);
 	free_tokens(node->tokens);
 	free_tokens(node->redir_list);
 	free(node);

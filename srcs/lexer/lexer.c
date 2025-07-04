@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:46:00 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/24 07:46:15 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/04 20:44:47 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ t_token	*lexer(const char *input)
 		if (!new_token)
 			exit(1);
 		new_token->next = NULL;
+		new_token->value = NULL;
+		new_token->type = T_UNKNOWN;
 		tokenizer(input, &i, new_token);
 		head_or_tail(&head, &tail, new_token);
 	}

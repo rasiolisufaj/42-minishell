@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:46:23 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/01 17:11:06 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/04 20:35:41 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ void	tokenizer(const char *input, int *i, t_token *new_token)
 	else if (input[*i] == '&')
 	{
 		ft_putendl_fd("Error: '&' is not a valid token", 2);
+		free_tokens(new_token);
 		exit(1);
 	}
 	else if (input[*i] == '(' || input[*i] == ')')
@@ -56,6 +57,8 @@ void	free_tokens(t_token *token)
 {
 	t_token	*tmp;
 
+	if (!token)
+		return ;
 	while (token)
 	{
 		tmp = token;
