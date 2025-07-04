@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 18:12:12 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/04 23:06:10 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:15:03 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,6 +143,8 @@ char	**env_to_envp(t_env *env)
 
 void	child_external(char *path_cmd, char **envp, t_cmd *cmd)
 {
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 	if (execve(path_cmd, cmd->args, envp) == -1)
 	{
 		ft_putstr_fd("minishell: execve failed: ", 2);
