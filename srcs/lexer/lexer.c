@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:46:00 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/06 22:43:09 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/06 23:40:03 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ t_token	*lexer(const char *input)
 		new_token->next = NULL;
 		new_token->value = NULL;
 		new_token->type = T_UNKNOWN;
-		if (!tokenizer(input, &i, new_token))
+		if (tokenizer(input, &i, new_token))
 		{
 			free(new_token);
 			free_tokens(head);

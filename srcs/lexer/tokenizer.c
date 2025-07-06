@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:46:23 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/06 22:43:02 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/06 23:33:08 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int	tokenizer(const char *input, int *i, t_token *new_token)
 		new_token->value = ft_strdup("&&");
 		*i += 2;
 	}
-	else if (input[*i] == '&')
+	else if (input[*i] == '&' && input[*i + 1] != '&')
 	{
 		ft_putendl_fd("Error: '&' is not a valid token", 2);
 		return (1);
