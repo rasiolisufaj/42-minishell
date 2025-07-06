@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:50:56 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/06 22:13:09 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/06 23:51:27 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ void	handle_unquoted(const char *input, int *i, char **buffer)
 		free(part);
 		*buffer = tmp;
 	}
-	free(tmp);
 }
 
 void	word_token(const char *input, int *i, t_token *new_token)
