@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/02 17:08:06 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/06 22:43:39 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ void	pipe_token(const char *input, int *i, t_token *new_token);
 void	free_tokens(t_token *token);
 void	free_node(t_node *node);
 void	head_or_tail(t_token **head, t_token **tail, t_token *new_token);
-void	tokenizer(const char *input, int *i, t_token *new_token);
+int     tokenizer(const char *input, int *i, t_token *new_token);
 char	*concat_quote(const char *input, int *i, char *quoted);
 void	handle_quote(const char *input, int *i, char **buffer);
 void	handle_unquoted(const char *input, int *i, char **buffer);

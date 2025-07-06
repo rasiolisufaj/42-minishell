@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_test.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 19:21:34 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/06/26 22:41:59 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/04 20:54:30 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,8 @@ int main(int argc, char **argv, char **envp)
 	argc = 0; // Pour éviter les warnings
 	argv = NULL; // Pour éviter les warnings
     // 1) Construire l’environnement
+    (void)argc;
+    (void)argv;
     t_env *env_list = build_env(envp);
     int    last_status = 0;
 

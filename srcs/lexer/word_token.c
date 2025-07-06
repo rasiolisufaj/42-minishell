@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   word_token.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:50:56 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/24 07:45:38 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/06 22:13:09 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ void	handle_unquoted(const char *input, int *i, char **buffer)
 		free(part);
 		*buffer = tmp;
 	}
+	free(tmp);
 }
 
 void	word_token(const char *input, int *i, t_token *new_token)

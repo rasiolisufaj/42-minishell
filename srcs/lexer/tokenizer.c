@@ -6,14 +6,14 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:46:23 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/04 20:35:41 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/06 22:43:02 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 #include "../../includes/minishell_structs.h"
 
-void	tokenizer(const char *input, int *i, t_token *new_token)
+int	tokenizer(const char *input, int *i, t_token *new_token)
 {
 	if (input[*i] == '|')
 		pipe_token(input, i, new_token);
@@ -30,13 +30,13 @@ void	tokenizer(const char *input, int *i, t_token *new_token)
 	else if (input[*i] == '&')
 	{
 		ft_putendl_fd("Error: '&' is not a valid token", 2);
-		free_tokens(new_token);
-		exit(1);
+		return (1);
 	}
 	else if (input[*i] == '(' || input[*i] == ')')
 		parenthesis_token(input, i, new_token);
 	else
 		word_token(input, i, new_token);
+	return (0);
 }
 
 void	head_or_tail(t_token **head, t_token **tail, t_token *new_token)
