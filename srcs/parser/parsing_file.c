@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:27 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/07 12:28:56 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/07 13:59:30 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,6 +136,16 @@ static t_node	*parse_and_or(t_token **tokens)
 	{
 		type = (*tokens)->type;
 		(*tokens) = (*tokens)->next;
+		if (!*tokens || (*tokens)->type == T_AND
+			|| (*tokens)->type == T_OR)
+		{
+			free_node(left);
+			if (type == T_AND)
+				parser_error("syntax error near unexpected token '&&'");
+			else
+				parser_error("syntax error near unexpected token '||'");
+			return (NULL);
+		}
 		right = parse_pipe(tokens);
 		if (!right)
 		{
