@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:55 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/07 18:53:26 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/07 19:34:42 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 int	exec_pipe(t_node *ast, t_env **env)
 {
+	return (exec_pipe(ast->left, env) || exec_pipe(ast->right, env));
 }
 
 int	exec_and(t_node *ast, t_env **env)

@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/07 16:25:52 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/07 19:51:59 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,9 +52,11 @@ int			pwd_exec(void);
 int			cd_exec(t_cmd *cmd);
 int			exit_exec(t_cmd *cmd, t_env **env);
 int			export_exec(t_cmd *cmd, t_env **env);
+bool		is_valid_arg(char *arg);
 
 // ENV
 t_env		*env_node(void);
+void		free_env(t_env *env);
 
 // EXPAND
 char		*expand_token(char *value, t_env *env, int last_status);
@@ -98,11 +100,19 @@ char		*join_and_free(char *s1, char *s2);
 char		*ft_strndup(const char *src, size_t n);
 bool		is_redirection(t_token_type type);
 
-
 // SIGNALS
 void		sigint_handler(int signo);
 void		setup_signals(void);
 
+int			echo_exec(t_cmd *cmd);
+int			unset_exec(t_cmd *cmd, t_env **env);
+int			env_exec(t_env *env);
+int			handle_redir(t_token *redir_list);
+int			is_builtin(t_cmd *cmd);
+int			exec_builtin(t_cmd *cmd, t_env **env);
+int			exec_external(t_cmd *cmd, t_env *env);
+int			handle_heredoc(char *delimiter);
+void		ft_free_split(char **ptr);
 // PRINT TOKENS
 // void	print_tokens(t_token *tokens);
 

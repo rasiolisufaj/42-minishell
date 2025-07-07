@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 15:42:19 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/07 16:04:11 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/07 19:48:29 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,6 @@ int	unset_exec(t_cmd *cmd, t_env **env)
 {
 	int		last_status;
 	int		i;
-	t_env	*current;
-	t_env	*prev;
 
 	if (env == NULL || cmd == NULL || cmd->args == NULL)
 		return (EXIT_FAILURE);

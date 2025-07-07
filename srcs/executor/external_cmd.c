@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   external_cmd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 18:12:12 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/07 17:56:50 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/07 19:51:59 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,23 +35,20 @@ char	*find_path(char *cmd, t_env *env)
 	if (ft_strchr(cmd, '/'))
 	{
 		if (access(cmd, F_OK) != 0)
-			return (ft_putstr_fd("minishell: ", 2),
-				ft_putstr_fd(cmd, 2), ft_putendl_fd(
-					": No such file or directory", 2), NULL);
+			return (ft_putstr_fd("minishell: ", 2), ft_putstr_fd(cmd, 2),
+				ft_putendl_fd(": No such file or directory", 2), NULL);
 		if (is_directory(cmd))
-			return (ft_putstr_fd("minishell: ", 2),
-				ft_putstr_fd(cmd, 2), ft_putendl_fd(
-					": Is a directory", 2), NULL);
+			return (ft_putstr_fd("minishell: ", 2), ft_putstr_fd(cmd, 2),
+				ft_putendl_fd(": Is a directory", 2), NULL);
 		if (access(cmd, X_OK) != 0)
 		{
-			return (ft_putstr_fd("minishell: ", 2),
-				ft_putstr_fd(cmd, 2), ft_putendl_fd(
-					": Permission denied", 2), NULL);
+			return (ft_putstr_fd("minishell: ", 2), ft_putstr_fd(cmd, 2),
+				ft_putendl_fd(": Permission denied", 2), NULL);
 		}
 		tmp = ft_strdup(cmd);
 		if (!tmp)
-			return (ft_putendl_fd(
-					"minishell: memory allocation failed", 2), NULL);
+			return (ft_putendl_fd("minishell: memory allocation failed", 2),
+				NULL);
 		return (tmp);
 	}
 	path = get_env_value(env, "PATH");
@@ -202,8 +199,8 @@ int	exec_external(t_cmd *cmd, t_env *env)
 		return (wrong_path_cmd(cmd->args[0]), 127);
 	envp = env_to_envp(env);
 	if (!envp)
-		return (free(path_cmd), ft_putendl_fd(
-				"minishell: memory allocation failed", 2), 1);
+		return (free(path_cmd),
+			ft_putendl_fd("minishell: memory allocation failed", 2), 1);
 	pid = fork();
 	if (pid < 0)
 		return (free(path_cmd), ft_free_split(envp),

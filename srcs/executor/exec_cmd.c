@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cmd.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 18:08:07 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/07 17:53:50 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/07 19:45:01 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ int	exec_cmd(t_node *ast, t_env **env)
 	saved_out = dup(STDOUT_FILENO);
 	if (handle_redir(ast->redir_list) != 0)
 		return (free_cmd(cmd), 1);
-	if (is_builtin(cmd->args[0]))
+	if (is_builtin(cmd))
 		status = exec_builtin(cmd, env);
 	else
 		status = exec_external(cmd, *env);

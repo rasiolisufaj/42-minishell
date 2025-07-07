@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 19:09:36 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/07 17:53:20 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/07 19:27:49 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int	exec_builtin(t_cmd *cmd, t_env **env)
 		if (cmd->ac > 1)
 			return (write(2, "env: too many arguments\n", 24), 1);
 		else
-			return (env_cmd(*env));
+			return (env_exec(*env));
 	}
 	else if (ft_strcmp(cmd->args[0], "exit") == 0)
 		return (exit_exec(cmd, env));
