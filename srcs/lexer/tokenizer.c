@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:46:23 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/01 17:11:06 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/06 23:33:08 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 #include "../../includes/minishell_structs.h"
 
-void	tokenizer(const char *input, int *i, t_token *new_token)
+int	tokenizer(const char *input, int *i, t_token *new_token)
 {
 	if (input[*i] == '|')
 		pipe_token(input, i, new_token);
@@ -27,15 +27,16 @@ void	tokenizer(const char *input, int *i, t_token *new_token)
 		new_token->value = ft_strdup("&&");
 		*i += 2;
 	}
-	else if (input[*i] == '&')
+	else if (input[*i] == '&' && input[*i + 1] != '&')
 	{
 		ft_putendl_fd("Error: '&' is not a valid token", 2);
-		exit(1);
+		return (1);
 	}
 	else if (input[*i] == '(' || input[*i] == ')')
 		parenthesis_token(input, i, new_token);
 	else
 		word_token(input, i, new_token);
+	return (0);
 }
 
 void	head_or_tail(t_token **head, t_token **tail, t_token *new_token)
@@ -56,6 +57,8 @@ void	free_tokens(t_token *token)
 {
 	t_token	*tmp;
 
+	if (!token)
+		return ;
 	while (token)
 	{
 		tmp = token;

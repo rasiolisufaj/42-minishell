@@ -1,0 +1,134 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse_cmd.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/07 17:01:36 by raisufaj          #+#    #+#             */
+/*   Updated: 2025/07/07 18:47:13 by raisufaj         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../../includes/minishell.h"
+#include "../../includes/minishell_structs.h"
+
+static void	init_token_lists(t_token_lists *lists)
+{
+	lists->args_head = NULL;
+	lists->args_tail = NULL;
+	lists->redir_head = NULL;
+	lists->redir_tail = NULL;
+}
+
+static bool	handle_redirection(t_token **tokens, t_token **redir_head,
+		t_token **redir_tail)
+{
+	append_token(redir_head, redir_tail, *tokens);
+	(*tokens) = (*tokens)->next;
+	if ((*tokens) && (*tokens)->type == T_WORD)
+	{
+		append_token(redir_head, redir_tail, *tokens);
+		(*tokens) = (*tokens)->next;
+		return (true);
+	}
+	return (false);
+}
+
+static bool	collect_cmd_tokens(t_token **tokens, t_token_lists *lists)
+{
+	while (*tokens && ((*tokens)->type == T_WORD
+			|| is_redirection((*tokens)->type)))
+	{
+		if (is_redirection((*tokens)->type))
+		{
+			if (!handle_redirection(tokens, &lists->redir_head,
+					&lists->redir_tail))
+				return (false);
+		}
+		else
+		{
+			append_token(&lists->args_head, &lists->args_tail, *tokens);
+			(*tokens) = (*tokens)->next;
+		}
+	}
+	return (true);
+}
+
+t_node	*parse_cmd(t_token **tokens)
+{
+	t_token_lists	lists;
+	t_node			*node;
+
+	if (!tokens || !*tokens)
+		return (NULL);
+	if (*tokens && (*tokens)->type == T_PAREN_OPEN)
+		return (parse_group(tokens));
+	init_token_lists(&lists);
+	if (!collect_cmd_tokens(tokens, &lists))
+	{
+		free_tokens(lists.args_head);
+		free_tokens(lists.redir_head);
+		parser_error("syntax error after redirection");
+		return (NULL);
+	}
+	node = create_node(N_CMD);
+	if (!node)
+	{
+		free_tokens(lists.args_head);
+		free_tokens(lists.redir_head);
+		return (NULL);
+	}
+	node->tokens = lists.args_head;
+	node->redir_list = lists.redir_head;
+	return (node);
+}
+
+// t_node	*parse_cmd(t_token **tokens)
+// {
+// 	t_token	*args_head;
+// 	t_token	*args_tail;
+// 	t_token	*redir_head;
+// 	t_token	*redir_tail;
+// 	t_node	*node;
+
+// 	if (!tokens || !*tokens)
+// 		return (NULL);
+// 	args_head = NULL;
+// 	args_tail = NULL;
+// 	redir_head = NULL;
+// 	redir_tail = NULL;
+// 	if (*tokens && (*tokens)->type == T_PAREN_OPEN)
+// 		return (parse_group(tokens));
+// 	while (*tokens && ((*tokens)->type == T_WORD
+// 			|| is_redirection((*tokens)->type)))
+// 	{
+// 		if (is_redirection((*tokens)->type))
+// 		{
+// 			append_token(&redir_head, &redir_tail, *tokens);
+// 			(*tokens) = (*tokens)->next;
+// 			if ((*tokens) && (*tokens)->type == T_WORD)
+// 			{
+// 				append_token(&redir_head, &redir_tail, *tokens);
+// 				(*tokens) = (*tokens)->next;
+// 			}
+// 			else
+// 			{
+// 				free_tokens(args_head);
+// 				free_tokens(redir_head);
+// 				return (parser_error("syntax error after redirection"), NULL);
+// 			}
+// 		}
+// 		else
+// 		{
+// 			append_token(&args_head, &args_tail, *tokens);
+// 			*tokens = (*tokens)->next;
+// 		}
+// 	}
+// 	node = create_node(N_CMD);
+// 	if (!node)
+// 		return (NULL);
+// 	node->tokens = args_head;
+// 	node->redir_list = redir_head;
+// 	return (node);
+// }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:14:55 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/07 17:46:37 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/07 19:06:02 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ int	main(int argc, char **argv, char **envp)
 		line = get_prompt();
 		if (!line)
 			break ;
-		ast = parsing_file(line, env, g_signal);
+		ast = parser(line, env, g_signal);
 		free(line);
 		if (!ast)
 			continue ;
