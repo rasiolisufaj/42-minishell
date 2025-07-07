@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:27 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/07 14:24:31 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/07 15:17:55 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,10 +75,7 @@ static t_node	*parse_pipe(t_token **tokens)
 	if (!tokens || !(*tokens))
 		return (NULL);
 	if ((*tokens)->type == T_PIPE)
-	{
-		parser_error("syntax error near unexpected token '|'");
-		return (NULL);
-	}
+		return (parser_error("syntax error near unexpected token '|'"), NULL);
 	left = parse_cmd(tokens);
 	if (!left)
 		return (NULL);
@@ -88,15 +85,15 @@ static t_node	*parse_pipe(t_token **tokens)
 		if (!(*tokens) || (*tokens)->type == T_PIPE)
 		{
 			free_node(left);
-			parser_error("syntax error near unexpected token '|'");
-			return (NULL);
+			return (parser_error("syntax error near unexpected token '|'"),
+				NULL);
 		}
 		right = parse_cmd(tokens);
 		if (!right)
 		{
 			free_node(left);
-			parser_error("syntax error near unexpected token '|'");
-			return (NULL);
+			return (parser_error("syntax error near unexpected token '|'"),
+				NULL);
 		}
 		pipe_node = create_node(N_PIPE);
 		if (!pipe_node)
@@ -136,8 +133,7 @@ static t_node	*parse_and_or(t_token **tokens)
 	{
 		type = (*tokens)->type;
 		(*tokens) = (*tokens)->next;
-		if (!*tokens || (*tokens)->type == T_AND
-			|| (*tokens)->type == T_OR)
+		if (!*tokens || (*tokens)->type == T_AND || (*tokens)->type == T_OR)
 		{
 			free_node(left);
 			if (type == T_AND)
@@ -182,11 +178,6 @@ static t_node	*parse_group(t_token **tokens)
 	(*tokens) = (*tokens)->next;
 	if (!(*tokens) || (*tokens)->type == T_PAREN_CLOSE)
 		return (parser_error("syntax error: unexpected ')'"), NULL);
-	if ((*tokens)->type == T_PAREN_OPEN)
-	{
-		parser_error("syntax error: unexpected '('");
-		return (NULL);
-	}
 	group = create_node(N_GROUP);
 	if (!group)
 		return (NULL);
@@ -234,8 +225,7 @@ t_node	*parse_cmd(t_token **tokens)
 			{
 				free_tokens(args_head);
 				free_tokens(redir_head);
-				parser_error("syntax error after redirection");
-				return (NULL);
+				return (parser_error("syntax error after redirection"), NULL);
 			}
 		}
 		else
@@ -271,7 +261,7 @@ t_node	*parsing_file(const char *input, t_env *env, int last_status)
 
 	tokens = lexer(input);
 	if (!tokens)
-		return (parser_error("Error: Lexer failed"), NULL);
+		return (NULL);
 	tokens_head = tokens;
 	ast = parse_and_or(&tokens);
 	if (!ast)
@@ -280,8 +270,7 @@ t_node	*parsing_file(const char *input, t_env *env, int last_status)
 	{
 		free_node(ast);
 		free_tokens(tokens_head);
-		parser_error("syntax error: unexpected token after cmd");
-		return (NULL);
+		return (parser_error("syntax error: unexpected token after cmd"), NULL);
 	}
 	expand_ast(ast, env, last_status);
 	expand_wildcards(ast);
