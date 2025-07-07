@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 16:28:38 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/02 17:11:28 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/07 15:15:55 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ static char *expand_variable(char *value, int *i, t_env *env, int last_status)
 	char	*part;
 	char	*env_value;
 	int		start;
-	
+
 	(*i)++;
 	start = *i;
 	if (value[*i] == '?')
@@ -81,6 +81,14 @@ static char *expand_variable(char *value, int *i, t_env *env, int last_status)
 			return (ft_putendl_fd(
 				"Error: Memory allocation failed in expand_variable", 2), NULL);
 		(*i)++;
+		return (part);
+	}
+	if (!ft_isalpha(value[*i]) && value[*i] != '_')
+	{
+		part = ft_strdup("$");
+		if (!part)
+			return (ft_putendl_fd(
+				"Error: Memory allocation failed in expand_variable", 2), NULL);
 		return (part);
 	}
 	while (value[*i] && (value[*i] == '_' || ft_isalnum(value[*i])))
