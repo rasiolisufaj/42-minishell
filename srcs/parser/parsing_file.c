@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:27 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/06 22:15:34 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/07 12:28:56 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,12 +74,23 @@ static t_node	*parse_pipe(t_token **tokens)
 
 	if (!tokens || !(*tokens))
 		return (NULL);
+	if ((*tokens)->type == T_PIPE)
+	{
+		parser_error("syntax error near unexpected token '|'");
+		return (NULL);
+	}
 	left = parse_cmd(tokens);
 	if (!left)
 		return (NULL);
 	while (*tokens && (*tokens)->type == T_PIPE)
 	{
 		(*tokens) = (*tokens)->next;
+		if (!(*tokens) || (*tokens)->type == T_PIPE)
+		{
+			free_node(left);
+			parser_error("syntax error near unexpected token '|'");
+			return (NULL);
+		}
 		right = parse_cmd(tokens);
 		if (!right)
 		{
