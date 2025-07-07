@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:14:55 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/04 21:11:25 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/07 17:46:37 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,12 +91,8 @@ int	main(int argc, char **argv, char **envp)
 	t_env	*env;
 
 	if (argc != 1)
-	{
-		write(2, "Usage: ", 7);
-		write(2, argv[0], ft_strlen(argv[0]));
-		write(2, "\n", 1);
-		return (1);
-	}
+		return (write(2, "Usage: ", 7), write(2, argv[0],
+				ft_strlen(argv[0])), write(2, "\n", 1), 1);
 	env = NULL;
 	g_signal = 127;
 	setup_signals();
@@ -115,7 +111,5 @@ int	main(int argc, char **argv, char **envp)
 			continue ;
 		g_signal = execute(ast, &env);
 	}
-	free_env(env);
-	rl_clear_history();
-	return (g_signal);
+	return (free_env(env), rl_clear_history(), g_signal);
 }

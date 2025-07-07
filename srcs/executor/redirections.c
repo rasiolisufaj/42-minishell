@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 19:05:19 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/04 18:09:46 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/07 17:54:42 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,13 @@ int	redir_error(t_token *redir_list)
 	current = redir_list;
 	while (current)
 	{
-		if (current->type == T_REDIR_IN || current->type == T_REDIR_OUT ||
-			current->type == T_REDIR_APPEND || current->type == T_HEREDOC)
+		if (current->type == T_REDIR_IN || current->type == T_REDIR_OUT
+			|| current->type == T_REDIR_APPEND || current->type == T_HEREDOC)
 		{
 			if (!current->next || current->next->type != T_WORD)
 			{
-				ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
+				ft_putstr_fd("minishell: syntax error near unexpected token `",
+					2);
 				if (!current->next)
 					ft_putstr_fd("newline", 2);
 				else
@@ -71,7 +72,7 @@ int	redir_opening(int *fd, t_token *current)
 int	handle_redir(t_token *redir_list)
 {
 	t_token	*current;
-	int	fd;
+	int		fd;
 
 	if (!redir_list)
 		return (0);
@@ -80,8 +81,8 @@ int	handle_redir(t_token *redir_list)
 	current = redir_list;
 	while (current)
 	{
-		if (current->type == T_REDIR_OUT || current->type == T_REDIR_APPEND ||
-			current->type == T_REDIR_IN)
+		if (current->type == T_REDIR_OUT || current->type == T_REDIR_APPEND
+			|| current->type == T_REDIR_IN)
 		{
 			if (redir_opening(&fd, current) != 0)
 				return (1);

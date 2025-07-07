@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 18:08:07 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/04 18:08:57 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/07 17:53:50 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 void	free_cmd(t_cmd *cmd)
 {
 	if (!cmd)
-		return;
+		return ;
 	if (cmd->args)
 	{
 		while (cmd->args[cmd->ac])
@@ -92,18 +92,26 @@ int	exec_cmd(t_node *ast, t_env **env)
 {
 	t_cmd	*cmd;
 	int		status;
+	int		saved_in;
+	int		saved_out;
 
 	if (ast == NULL || ast->type != N_CMD)
 		return (1);
 	cmd = init_cmd(ast);
 	if (!cmd)
 		return (1);
+	saved_in = dup(STDIN_FILENO);
+	saved_out = dup(STDOUT_FILENO);
 	if (handle_redir(ast->redir_list) != 0)
 		return (free_cmd(cmd), 1);
 	if (is_builtin(cmd->args[0]))
 		status = exec_builtin(cmd, env);
 	else
 		status = exec_external(cmd, *env);
+	dup2(saved_in, STDIN_FILENO);
+	close(saved_in);
+	dup2(saved_out, STDOUT_FILENO);
+	close(saved_out);
 	free_cmd(cmd);
 	return (status);
 }

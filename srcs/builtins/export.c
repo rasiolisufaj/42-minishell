@@ -6,37 +6,12 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 17:30:55 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/02 18:22:03 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/07 17:50:48 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 #include "../../includes/minishell_structs.h"
-
-// For testing
-/*int	ft_strcmp(const char *s1, const char *s2)
-{
-	while (*s1 && *s2 && *s1 == *s2)
-	{
-		s1++;
-		s2++;
-	}
-	return (*(unsigned char *)s1 - *(unsigned char *)s2);
-}
-
-t_env	*env_node(void)
-{
-	t_env	*new_node;
-
-	new_node = malloc(sizeof(t_env));
-	if (!new_node)
-		return (NULL);
-	new_node->key = NULL;
-	new_node->value = NULL;
-	new_node->exported = true;
-	new_node->next = NULL;
-	return (new_node);
-}*/
 
 size_t	count_values(t_env *env)
 {
@@ -116,63 +91,6 @@ void	sorted_algo(t_env **sorted_exports, t_env *env, size_t count)
 	}
 }
 
-void	print_array(char *value)
-{
-	char	*inside;
-	char	**array;
-	int		len;
-	int		i;
-	int		start;
-	int		end;
-
-	len = ft_strlen(value);
-	if (len < 2 || value[0] != '(' || value[len - 1] != ')')
-	{
-		ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
-		ft_putchar_fd(value[len - 1], 2);
-		ft_putstr_fd("'\n", 2);
-		return ;
-	}
-	inside = ft_substr(value, 1, len - 2);
-	if (!inside)
-	{
-		ft_putendl_fd("minishell: memory allocation failed", 2);
-		return ;
-	}
-	array = ft_split(inside, ' ');
-	free(inside);
-	if (!array)
-	{
-		ft_putendl_fd("minishell: memory allocation failed", 2);
-		return ;
-	}
-	write(1, "=([", 3);
-	i = 0;
-	while (array[i])
-	{
-		start = 0;
-		end = ft_strlen(array[i]);
-		if (i > 0)
-			write(1, " [", 2);
-		ft_putnbr_fd(i, 1);
-		write(1, "]=\"", 3);
-		while (array[i][start] == ' ')
-			start++;
-		while (end > start && array[i][end - 1] == ' ')
-			end--;
-		write(1, array[i]+start, end - start);
-		write(1, "\"", 1);
-		i++;
-	}
-	write(1, ")", 1);
-	i = 0;
-	while (array[i])
-	{
-		free(array[i]);
-		i++;
-	}
-}
-
 void	print_exported_value(t_env **sorted_exports)
 {
 	t_env	**current;
@@ -182,26 +100,15 @@ void	print_exported_value(t_env **sorted_exports)
 	while (*current)
 	{
 		value = (*current)->value;
-		if (value && ft_strlen(value) >= 2 && value[0] == '(' &&
-			value[ft_strlen(value) - 1] == ')')
+		ft_putstr_fd("declare -x ", 1);
+		ft_putstr_fd((*current)->key, 1);
+		if (value)
 		{
-			ft_putstr_fd("declare -ax ", 1);
-			ft_putstr_fd((*current)->key, 1);
-			print_array(value);
-			ft_putchar_fd('\n', 1);
+			ft_putstr_fd("=\"", 1);
+			ft_putstr_fd(value, 1);
+			ft_putstr_fd("\"", 1);
 		}
-		else
-		{
-			ft_putstr_fd("declare -x ", 1);
-			ft_putstr_fd((*current)->key, 1);
-			if (value)
-			{
-				ft_putstr_fd("=\"", 1);
-				ft_putstr_fd(value, 1);
-				ft_putstr_fd("\"", 1);
-			}
-			ft_putchar_fd('\n', 1);
-		}
+		ft_putchar_fd('\n', 1);
 		current++;
 	}
 }
@@ -214,7 +121,7 @@ void	get_exported_env(t_env *env)
 	if (!env)
 		return ;
 	count = count_values(env);
-	sorted_exports = malloc(sizeof(t_env*) * (count + 1));
+	sorted_exports = malloc(sizeof(t_env *) * (count + 1));
 	if (!sorted_exports)
 	{
 		perror("malloc in get_exported_env failed");
@@ -276,7 +183,7 @@ int	add_exported(char *arg, t_env **env)
 	key = ft_substr(arg, 0, len);
 	if (!key)
 		return (ft_putendl_fd(
-			"minishell: memory allocation failed", 2), EXIT_FAILURE);
+				"minishell: memory allocation failed", 2), EXIT_FAILURE);
 	exist = find_env(*env, key);
 	if (exist)
 	{
@@ -285,7 +192,8 @@ int	add_exported(char *arg, t_env **env)
 			new_val = ft_strdup(eq_sign + 1);
 			if (!new_val)
 				return (free(key),
-					ft_putendl_fd("minishell: memory allocation failed", 2), EXIT_FAILURE);
+					ft_putendl_fd("minishell: memory allocation failed", 2),
+					EXIT_FAILURE);
 		}
 		else
 			new_val = NULL;
@@ -298,14 +206,15 @@ int	add_exported(char *arg, t_env **env)
 	new_env = env_node();
 	if (!new_env)
 		return (free(key), ft_putendl_fd(
-			"minishell: memory allocation failed", 2), EXIT_FAILURE);
+				"minishell: memory allocation failed", 2), EXIT_FAILURE);
 	new_env->key = key;
 	if (eq_sign)
 	{
 		new_env->value = ft_strdup(eq_sign + 1);
 		if (!new_env->value)
 			return (free(new_env->key), free(new_env), free(key),
-				ft_putendl_fd("minishell: memory allocation failed", 2), EXIT_FAILURE);
+				ft_putendl_fd("minishell: memory allocation failed", 2),
+				EXIT_FAILURE);
 	}
 	new_env->next = *env;
 	*env = new_env;
@@ -340,7 +249,8 @@ int	export_exec(t_cmd *cmd, t_env **env)
 }
 
 // extern size_t   count_values(t_env *env);
-// extern void     sorted_algo(t_env **sorted_exports, t_env *env, size_t count);
+// extern void     sorted_algo(t_env **sorted_exports,
+//						t_env *env, size_t count);
 // extern void     print_exported_value(t_env **sorted_exports);
 // extern t_env   *env_node(void);
 
@@ -361,7 +271,7 @@ int	export_exec(t_cmd *cmd, t_env **env)
 //     t_env *env = NULL;
 //     size_t cnt;
 
-//     /* 1) Construire la liste : certaines variables exportées, d’autres non */
+//     /* 1) Construire la liste : certaines variables exportées */
 //     add_node(&env, "oko",         "(     lol pop p)",    1);
 //     add_node(&env, "aa",         "      a-val",    1);
 //     add_node(&env, "AA",         "A-val",    1);

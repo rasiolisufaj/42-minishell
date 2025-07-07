@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 16:28:38 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/07 15:15:55 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/07 18:03:56 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,13 +60,14 @@ static char	*consume_single_quote(char *value, int *i)
 	part = ft_strndup(value + start, *i - start);
 	if (!part)
 		return (ft_putendl_fd(
-			"Error: Memory allocation failed in consume_single_quote", 2), NULL);
+				"Error: Memory allocation failed in consume_single_quote",
+				2), NULL);
 	if (value[*i] == '\'')
 		(*i)++;
 	return (part);
 }
 
-static char *expand_variable(char *value, int *i, t_env *env, int last_status)
+static char	*expand_variable(char *value, int *i, t_env *env, int last_status)
 {
 	char	*part;
 	char	*env_value;
@@ -79,7 +80,8 @@ static char *expand_variable(char *value, int *i, t_env *env, int last_status)
 		part = ft_itoa(last_status);
 		if (!part)
 			return (ft_putendl_fd(
-				"Error: Memory allocation failed in expand_variable", 2), NULL);
+					"Error: Memory allocation failed in expand_variable",
+					2), NULL);
 		(*i)++;
 		return (part);
 	}
@@ -88,7 +90,8 @@ static char *expand_variable(char *value, int *i, t_env *env, int last_status)
 		part = ft_strdup("$");
 		if (!part)
 			return (ft_putendl_fd(
-				"Error: Memory allocation failed in expand_variable", 2), NULL);
+					"Error: Memory allocation failed in expand_variable",
+					2), NULL);
 		return (part);
 	}
 	while (value[*i] && (value[*i] == '_' || ft_isalnum(value[*i])))
@@ -96,7 +99,8 @@ static char *expand_variable(char *value, int *i, t_env *env, int last_status)
 	part = ft_strndup(value + start, *i - start);
 	if (!part)
 		return (ft_putendl_fd(
-			"Error: Memory allocation failed in expand_variable", 2), NULL);
+				"Error: Memory allocation failed in expand_variable",
+				2), NULL);
 	env_value = get_env_value(env, part);
 	free(part);
 	if (!env_value || !*env_value)
@@ -104,17 +108,20 @@ static char *expand_variable(char *value, int *i, t_env *env, int last_status)
 		part = ft_strdup("");
 		if (!part)
 			return (ft_putendl_fd(
-				"Error: Memory allocation failed in expand_variable", 2), NULL);
+					"Error: Memory allocation failed in expand_variable",
+					2), NULL);
 		return (part);
 	}
 	part = ft_strdup(env_value);
 	if (!part)
 		return (ft_putendl_fd(
-			"Error: Memory allocation failed in expand_variable", 2), NULL);
+				"Error: Memory allocation failed in expand_variable",
+				2), NULL);
 	return (part);
 }
 
-static char	*consume_double_quote(char *value, int *i, t_env *env, int last_status)
+static char	*consume_double_quote(char *value, int *i,
+	t_env *env, int last_status)
 {
 	char	*part;
 	char	*result;
@@ -123,7 +130,8 @@ static char	*consume_double_quote(char *value, int *i, t_env *env, int last_stat
 	result = ft_strdup("");
 	if (!result)
 		return (ft_putendl_fd(
-			"Error: Memory allocation failed in consume_double_quote", 2), NULL);
+				"Error: Memory allocation failed in consume_double_quote",
+				2), NULL);
 	(*i)++;
 	while (value[*i] && value[*i] != '"')
 	{
@@ -136,7 +144,8 @@ static char	*consume_double_quote(char *value, int *i, t_env *env, int last_stat
 			free(part);
 			if (!result)
 				return (ft_putendl_fd(
-					"Error: Memory allocation failed in consume_double_quote", 2), NULL);
+						"Error: Memory allocation failed in consume_double_quote",
+						2), NULL);
 		}
 		else
 		{
@@ -148,12 +157,14 @@ static char	*consume_double_quote(char *value, int *i, t_env *env, int last_stat
 				part = ft_strndup(value + start, *i - start);
 				if (!part)
 					return (free(result), ft_putendl_fd(
-						"Error: Memory allocation failed in consume_double_quote", 2), NULL);
+							"Error: Memory allocation failed in consume_double_quote",
+							2), NULL);
 				append_string(&result, part);
 				free(part);
 				if (!result)
 					return (ft_putendl_fd(
-						"Error: Memory allocation failed in consume_double_quote", 2), NULL);
+							"Error: Memory allocation failed in consume_double_quote",
+							2), NULL);
 			}
 		}
 	}
@@ -174,7 +185,8 @@ static char	*consume_unquoted(char *value, int *i)
 	part = ft_strndup(value + start, *i - start);
 	if (!part)
 		return (ft_putendl_fd(
-			"Error: Memory allocation failed in consume_unquoted", 2), NULL);
+				"Error: Memory allocation failed in consume_unquoted",
+				2), NULL);
 	return (part);
 }
 
@@ -196,7 +208,7 @@ char	*expand_token(char *value, t_env *env, int last_status)
 			part = consume_single_quote(value, &i);
 			if (!part)
 				return (free(result), NULL);
-		}	
+		}
 		else if (value[i] == '"')
 		{
 			part = consume_double_quote(value, &i, env, last_status);
@@ -219,7 +231,8 @@ char	*expand_token(char *value, t_env *env, int last_status)
 		free(part);
 		if (!result)
 			return (ft_putendl_fd(
-				"Error: Memory allocation failed in expand_token", 2), NULL);
+					"Error: Memory allocation failed in expand_token",
+					2), NULL);
 	}
 	return (result);
 }

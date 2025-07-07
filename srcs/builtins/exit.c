@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:25:12 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/02 17:47:22 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/07 17:47:33 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 int	is_numeric_argument(char *arg)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (arg[i] && arg[i] == ' ')
@@ -38,7 +38,7 @@ int	is_numeric_argument(char *arg)
 
 int	exit_exec(t_cmd *cmd, t_env **env)
 {
-	int last_status;
+	int	last_status;
 
 	last_status = 0;
 	if (cmd->ac > 2)

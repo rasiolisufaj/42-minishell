@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 18:12:12 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/04 23:15:03 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/07 17:56:50 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,21 +37,21 @@ char	*find_path(char *cmd, t_env *env)
 		if (access(cmd, F_OK) != 0)
 			return (ft_putstr_fd("minishell: ", 2),
 				ft_putstr_fd(cmd, 2), ft_putendl_fd(
-				": No such file or directory", 2),  NULL);
+					": No such file or directory", 2), NULL);
 		if (is_directory(cmd))
 			return (ft_putstr_fd("minishell: ", 2),
 				ft_putstr_fd(cmd, 2), ft_putendl_fd(
-				": Is a directory", 2), NULL);
+					": Is a directory", 2), NULL);
 		if (access(cmd, X_OK) != 0)
 		{
 			return (ft_putstr_fd("minishell: ", 2),
 				ft_putstr_fd(cmd, 2), ft_putendl_fd(
-				": Permission denied", 2), NULL);
+					": Permission denied", 2), NULL);
 		}
 		tmp = ft_strdup(cmd);
 		if (!tmp)
 			return (ft_putendl_fd(
-				"minishell: memory allocation failed", 2), NULL);
+					"minishell: memory allocation failed", 2), NULL);
 		return (tmp);
 	}
 	path = get_env_value(env, "PATH");
@@ -96,9 +96,9 @@ int	count_env_nodes(t_env *env)
 void	free_envp_part(char **envp, int start)
 {
 	int	i;
-	
+
 	if (!envp)
-		return;
+		return ;
 	i = 0;
 	while (i < start)
 	{
@@ -108,11 +108,25 @@ void	free_envp_part(char **envp, int start)
 	free(envp);
 }
 
+static char	*create_env_entry(t_env *env_node)
+{
+	char	*tmp;
+	char	*entry;
+
+	tmp = ft_strjoin(env_node->key, "=");
+	if (!tmp)
+		return (NULL);
+	entry = ft_strjoin(tmp, env_node->value);
+	free(tmp);
+	if (!entry)
+		return (NULL);
+	return (entry);
+}
+
 char	**env_to_envp(t_env *env)
 {
 	t_env	*current;
 	char	**envp;
-	char	*tmp;
 	int		i;
 	int		count;
 
@@ -126,11 +140,7 @@ char	**env_to_envp(t_env *env)
 	{
 		if (current->exported)
 		{
-			tmp = ft_strjoin(current->key, "=");
-			if (!tmp)
-				return (free_envp_part(envp, i), NULL);
-			envp[i] = ft_strjoin(tmp, current->value);
-			free(tmp);
+			envp[i] = create_env_entry(current);
 			if (!envp[i])
 				return (free_envp_part(envp, i), NULL);
 			i++;
@@ -169,6 +179,16 @@ int	parent_external(pid_t pid, char *path_cmd, char **envp)
 	return (1);
 }
 
+void	wrong_path_cmd(char *cmd)
+{
+	if (!ft_strchr(cmd, '/'))
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(cmd, 2);
+		ft_putendl_fd(": command not found", 2);
+	}
+}
+
 int	exec_external(t_cmd *cmd, t_env *env)
 {
 	char	*path_cmd;
@@ -179,19 +199,11 @@ int	exec_external(t_cmd *cmd, t_env *env)
 		return (1);
 	path_cmd = find_path(cmd->args[0], env);
 	if (!path_cmd)
-	{
-		if (!ft_strchr(cmd->args[0], '/'))
-		{
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(cmd->args[0], 2);
-			ft_putendl_fd(": command not found", 2);
-		}
-		return (127);
-	}
+		return (wrong_path_cmd(cmd->args[0]), 127);
 	envp = env_to_envp(env);
 	if (!envp)
 		return (free(path_cmd), ft_putendl_fd(
-			"minishell: memory allocation failed", 2), 1);
+				"minishell: memory allocation failed", 2), 1);
 	pid = fork();
 	if (pid < 0)
 		return (free(path_cmd), ft_free_split(envp),
@@ -201,7 +213,5 @@ int	exec_external(t_cmd *cmd, t_env *env)
 		child_external(path_cmd, envp, cmd);
 		exit(127);
 	}
-	else
-		return (parent_external(pid, path_cmd, envp));
-	return (0);
+	return (parent_external(pid, path_cmd, envp));
 }
