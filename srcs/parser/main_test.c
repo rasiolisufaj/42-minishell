@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 19:21:34 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/04 20:54:30 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/07 16:13:42 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ int main(int argc, char **argv, char **envp)
     buffer[strcspn(buffer, "\n")] = '\0';
 
     // 3) Parsing + expansion variables + wildcard
-    t_node *ast = parsing_file(buffer, env_list, last_status);
+    t_node *ast = parser(buffer, env_list, last_status);
     if (!ast)
     {
         free_env(env_list);
