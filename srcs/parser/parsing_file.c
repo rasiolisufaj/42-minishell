@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:27 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/07 13:59:30 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/07 14:24:31 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,6 +180,13 @@ static t_node	*parse_group(t_token **tokens)
 	if (!tokens || !(*tokens) || (*tokens)->type != T_PAREN_OPEN)
 		return (parser_error("syntax error: expected '('"), NULL);
 	(*tokens) = (*tokens)->next;
+	if (!(*tokens) || (*tokens)->type == T_PAREN_CLOSE)
+		return (parser_error("syntax error: unexpected ')'"), NULL);
+	if ((*tokens)->type == T_PAREN_OPEN)
+	{
+		parser_error("syntax error: unexpected '('");
+		return (NULL);
+	}
 	group = create_node(N_GROUP);
 	if (!group)
 		return (NULL);
