@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:50:44 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/24 03:27:24 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/09 14:58:30 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,17 @@ static void	append_segment(const char *input, int start, int end, char **buffer)
 	*buffer = tmp;
 }
 
+static void	handle_escape_sequence(const char *input, int *i, int *start,
+		char **buffer)
+{
+	if (*i > *start)
+		append_segment(input, *start, *i, buffer);
+	else
+		(*i)++;
+	handle_escape(input, i, buffer);
+	*start = *i;
+}
+
 void	handle_quote(const char *input, int *i, char **buffer)
 {
 	int		start;
@@ -36,7 +47,12 @@ void	handle_quote(const char *input, int *i, char **buffer)
 	quote = input[*i];
 	(*i)++;
 	while (input[*i] && input[*i] != quote)
-		(*i)++;
+	{
+		if (quote == '"' && input[*i] == '\\' && input[*i + 1])
+			handle_escape_sequence(input, i, &start, buffer);
+		else
+			(*i)++;
+	}
 	if (input[*i] == '\0')
 		parser_error("syntax_error: unclosed quote");
 	if (input[*i] == quote)

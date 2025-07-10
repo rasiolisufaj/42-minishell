@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 17:30:55 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/07 17:50:48 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/09 17:08:23 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,9 +236,9 @@ int	export_exec(t_cmd *cmd, t_env **env)
 	{
 		if (!is_valid_arg(cmd->args[i]))
 		{
-			ft_putstr_fd("export: ", 2);
+			ft_putstr_fd("minishell: export: `", 2);
 			ft_putstr_fd(cmd->args[i], 2);
-			ft_putendl_fd(": not a valid identifier", 2);
+			ft_putendl_fd("': not a valid identifier", 2);
 			status = 1;
 		}
 		else if (add_exported(cmd->args[i], env) != EXIT_SUCCESS)
@@ -247,59 +247,3 @@ int	export_exec(t_cmd *cmd, t_env **env)
 	}
 	return (status);
 }
-
-// extern size_t   count_values(t_env *env);
-// extern void     sorted_algo(t_env **sorted_exports,
-//						t_env *env, size_t count);
-// extern void     print_exported_value(t_env **sorted_exports);
-// extern t_env   *env_node(void);
-
-// static void add_node(t_env **env, const char *k, const char *v, int exp)
-// {
-//     t_env *n = env_node();
-//     if (!n) { perror("env_node"); exit(1); }
-
-//     n->key      = strdup(k);
-//     n->value    = v ? strdup(v) : NULL;
-//     n->exported = exp;
-//     n->next     = *env;
-//     *env        = n;
-// }
-
-// int main(void)
-// {
-//     t_env *env = NULL;
-//     size_t cnt;
-
-//     /* 1) Construire la liste : certaines variables exportées */
-//     add_node(&env, "oko",         "(     lol pop p)",    1);
-//     add_node(&env, "aa",         "      a-val",    1);
-//     add_node(&env, "AA",         "A-val",    1);
-//     add_node(&env, "BB",         NULL,       1);
-//     add_node(&env, "NOT_EXPORTED","no",      0);
-
-//     /* 2) Tester count_values */
-//     cnt = count_values(env);
-//     printf("count_values = %zu (attendu 4)\n", cnt);
-
-//     /* 3) Trier et afficher les exports */
-//     t_env **arr = malloc((cnt + 1) * sizeof *arr);
-//     if (!arr) { perror("malloc"); return 1; }
-//     sorted_algo(arr, env, cnt);
-
-//     printf("=== sorted exports ===\n");
-//     print_exported_value(arr);
-//     free(arr);
-
-//     /* 4) Nettoyage (libération de la liste env) */
-//     while (env)
-//     {
-//         t_env *next = env->next;
-//         free(env->key);
-//         free(env->value);
-//         free(env);
-//         env = next;
-//     }
-
-//     return 0;
-// }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cmd.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
+/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 18:08:07 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/07 19:45:01 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/08 20:37:14 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,17 @@
 
 void	free_cmd(t_cmd *cmd)
 {
+	int	i;
+
 	if (!cmd)
 		return ;
 	if (cmd->args)
 	{
-		while (cmd->args[cmd->ac])
+		i = 0;
+		while (cmd->args[i])
 		{
-			free(cmd->args[cmd->ac]);
-			cmd->ac--;
+			free(cmd->args[i]);
+			i++;
 		}
 		free(cmd->args);
 	}
@@ -88,6 +91,22 @@ t_cmd	*init_cmd(t_node *ast)
 	return (cmd);
 }
 
+void	close_files(int saved_in, int saved_out)
+{
+	dup2(saved_in, STDIN_FILENO);
+	close(saved_in);
+	dup2(saved_out, STDOUT_FILENO);
+	close(saved_out);
+}
+
+void	empty_cmd(t_cmd *cmd, int saved_in, int saved_out)
+{
+	ft_putstr_fd("minishell: ", 2);
+	ft_putendl_fd(": command not found", 2);
+	close_files(saved_in, saved_out);
+	free_cmd(cmd);
+}
+
 int	exec_cmd(t_node *ast, t_env **env)
 {
 	t_cmd	*cmd;
@@ -103,15 +122,16 @@ int	exec_cmd(t_node *ast, t_env **env)
 	saved_in = dup(STDIN_FILENO);
 	saved_out = dup(STDOUT_FILENO);
 	if (handle_redir(ast->redir_list) != 0)
-		return (free_cmd(cmd), 1);
+		return (close_files(saved_in, saved_out), free_cmd(cmd), 1);
+	if (!cmd->args || !cmd->args[0])
+		return (close_files(saved_in, saved_out), free_cmd(cmd), 0);
+	if (cmd->args[0][0] == '\0')
+		return (empty_cmd(cmd, saved_in, saved_out), 127);
 	if (is_builtin(cmd))
 		status = exec_builtin(cmd, env);
 	else
 		status = exec_external(cmd, *env);
-	dup2(saved_in, STDIN_FILENO);
-	close(saved_in);
-	dup2(saved_out, STDOUT_FILENO);
-	close(saved_out);
+	close_files(saved_in, saved_out);
 	free_cmd(cmd);
 	return (status);
 }

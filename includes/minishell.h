@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
+/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/07 19:51:59 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/09 16:34:59 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@
 # define EXIT_SUCCESS 0
 # define EXIT_FAILURE 1
 
+# define PATH_ERROR_126 ((char *)126)
+
 extern int	g_signal;
 
 // EXECUTOR
@@ -50,7 +52,7 @@ int			exec_group(t_node *ast, t_env **env);
 // BUILTINS
 int			pwd_exec(void);
 int			cd_exec(t_cmd *cmd);
-int			exit_exec(t_cmd *cmd, t_env **env);
+int			exit_exec(t_cmd *cmd);
 int			export_exec(t_cmd *cmd, t_env **env);
 bool		is_valid_arg(char *arg);
 
@@ -86,6 +88,7 @@ void		handle_unquoted(const char *input, int *i, char **buffer);
 void		word_token(const char *input, int *i, t_token *new_token);
 int			tokenizer(const char *input, int *i, t_token *new_token);
 char		*concat_quote(const char *input, int *i, char *quoted);
+void		handle_escape(const char *input, int *i, char **buffer);
 
 // PROMPT
 char		*get_prompt(void);
@@ -102,8 +105,12 @@ bool		is_redirection(t_token_type type);
 
 // SIGNALS
 void		sigint_handler(int signo);
+void		sigint_handler_waiting(int signo);
 void		setup_signals(void);
+void		setup_signals_exec(void);
+void		setup_signals_waiting(void);
 
+// EXECUTOR
 int			echo_exec(t_cmd *cmd);
 int			unset_exec(t_cmd *cmd, t_env **env);
 int			env_exec(t_env *env);

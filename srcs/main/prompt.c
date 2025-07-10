@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 22:52:49 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/30 17:58:41 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/08 19:01:44 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,27 @@
 char	*get_prompt(void)
 {
 	char	*line;
+	int		i;
 
-	line = readline(PROMPT);
-	if (!line)
-		return (printf("\n"), NULL);
-	if (line[0] == '\0')
-		return (free(line), NULL);
-	add_history(line);
-	return (line);
+	while (1)
+	{
+		line = readline(PROMPT);
+		if (!line)
+			return (printf("exit\n"), NULL);
+		if (line[0] == '\0')
+		{
+			free(line);
+			continue;
+		}
+		i = 0;
+		while (line[i] && line[i] == ' ')
+			i++;
+		if (line[i] == '\0')
+		{
+			free(line);
+			continue;
+		}
+		add_history(line);
+		return (line);
+	}
 }

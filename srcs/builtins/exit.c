@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:25:12 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/07 17:47:33 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/10 16:29:36 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,27 +36,22 @@ int	is_numeric_argument(char *arg)
 	return (0);
 }
 
-int	exit_exec(t_cmd *cmd, t_env **env)
+int	exit_exec(t_cmd *cmd)
 {
-	int	last_status;
+	int	exit_status;
 
-	last_status = 0;
+	exit_status = 0;
 	if (cmd->ac > 2)
 		return (write(2, "exit: too many arguments\n", 25), 1);
 	else if (cmd->ac == 2)
 	{
 		if (is_numeric_argument(cmd->args[1]) != 0)
-		{
-			free_env(*env);
-			rl_clear_history();
-			exit(2);
-		}
-		last_status = ft_atoi(cmd->args[1]) & 0xFF;
+			exit_status = 2;
+		else
+			exit_status = ft_atoi(cmd->args[1]) & 0xFF;
 	}
 	else
-		last_status = g_signal & 0xFF;
+		exit_status = g_signal & 0xFF;
 	write(1, "exit\n", 5);
-	free_env(*env);
-	rl_clear_history();
-	exit(last_status);
+	return (255 + (exit_status << 8));
 }

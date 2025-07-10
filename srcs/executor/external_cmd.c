@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   external_cmd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
+/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 18:12:12 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/07 19:51:59 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/10 16:33:46 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,11 @@ char	*find_path(char *cmd, t_env *env)
 				ft_putendl_fd(": No such file or directory", 2), NULL);
 		if (is_directory(cmd))
 			return (ft_putstr_fd("minishell: ", 2), ft_putstr_fd(cmd, 2),
-				ft_putendl_fd(": Is a directory", 2), NULL);
+				ft_putendl_fd(": Is a directory", 2), PATH_ERROR_126);
 		if (access(cmd, X_OK) != 0)
 		{
 			return (ft_putstr_fd("minishell: ", 2), ft_putstr_fd(cmd, 2),
-				ft_putendl_fd(": Permission denied", 2), NULL);
+				ft_putendl_fd(": Permission denied", 2), PATH_ERROR_126);
 		}
 		tmp = ft_strdup(cmd);
 		if (!tmp)
@@ -67,8 +67,17 @@ char	*find_path(char *cmd, t_env *env)
 		free(tmp);
 		if (!full_path)
 			return (ft_free_split(new_paths), NULL);
-		if (access(full_path, X_OK) == 0)
-			return (ft_free_split(new_paths), full_path);
+		if (access(full_path, F_OK) == 0)
+		{
+			if (is_directory(full_path))
+			{
+				free(full_path);
+				i++;
+				continue ;
+			}
+			if (access(full_path, X_OK) == 0)
+				return (ft_free_split(new_paths), full_path);
+		}
 		free(full_path);
 		i++;
 	}
@@ -150,8 +159,7 @@ char	**env_to_envp(t_env *env)
 
 void	child_external(char *path_cmd, char **envp, t_cmd *cmd)
 {
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
+	setup_signals_exec();
 	if (execve(path_cmd, cmd->args, envp) == -1)
 	{
 		ft_putstr_fd("minishell: execve failed: ", 2);
@@ -166,7 +174,17 @@ int	parent_external(pid_t pid, char *path_cmd, char **envp)
 {
 	int	status;
 
-	waitpid(pid, &status, 0);
+	setup_signals_waiting();
+	waitpid(pid, &status, WUNTRACED);
+	if (WIFSTOPPED(status))
+	{
+		printf("\n");
+		setup_signals();
+		free(path_cmd);
+		ft_free_split(envp);
+		return (130);
+	}
+	setup_signals();
 	free(path_cmd);
 	ft_free_split(envp);
 	if (WIFEXITED(status))
@@ -197,6 +215,8 @@ int	exec_external(t_cmd *cmd, t_env *env)
 	path_cmd = find_path(cmd->args[0], env);
 	if (!path_cmd)
 		return (wrong_path_cmd(cmd->args[0]), 127);
+	if (path_cmd == PATH_ERROR_126)
+		return (126);
 	envp = env_to_envp(env);
 	if (!envp)
 		return (free(path_cmd),
