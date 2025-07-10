@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 15:35:46 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/09 00:11:50 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/10 22:12:04 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,14 @@ typedef struct s_token
 	struct s_token	*next;
 }	t_token;
 
+typedef struct s_token_lists
+{
+	t_token		*args_head;
+	t_token		*args_tail;
+	t_token		*redir_head;
+	t_token		*redir_tail;
+}	t_token_lists;
+
 typedef enum e_node_type
 {
 	N_CMD,
@@ -45,13 +53,6 @@ typedef enum e_node_type
 	N_GROUP,
 }	t_node_type;
 
-typedef struct s_token_lists
-{
-	t_token		*args_head;
-	t_token		*args_tail;
-	t_token		*redir_head;
-	t_token		*redir_tail;
-}	t_token_lists;
 
 typedef struct s_node
 {
@@ -69,6 +70,12 @@ typedef struct s_env
 	bool			exported;
 	struct s_env	*next;
 }	t_env;
+
+typedef struct s_expand_state
+{
+	int		last_status;
+	bool	in_double_quotes;
+}	t_expand_state;
 
 typedef struct s_cmd
 {

@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/09 16:34:59 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/10 22:12:25 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,23 @@ char		*expand_token(char *value, t_env *env, int last_status);
 char		*get_env_value(t_env *env, char *name);
 void		expand_ast(t_node *node, t_env *env, int last_status);
 void		expand_wildcards(t_node *node);
+int			check_quotes(char *value);
+void		free_token_content(t_token *token, char *new_val, char *old_val);
+void		update_token_links(t_token **head, t_token *prev,
+	t_token *current, t_token *next);
+char		*handle_quotes(char *value, int *i, t_env *env,
+	int last_status);
+char		*handle_escaped_dollar(int *i);
+char		*handle_variable_expression(char *value, int *i, t_env *env,
+	int last_status);
+char		*handle_literal(char *value, int *i);
+void		append_string(char **input, char *str);
+char		*consume_single_quote(char *value, int *i);
+char		*consume_double_quote(char *value, int *i, t_env *env,
+	int last_status);
+char		*consume_unquoted(char *value, int *i);
+char		*expand_variable(char *value, int *i, t_env *env,
+	t_expand_state *state);
 
 // PARSER
 t_node		*parse_cmd(t_token **tokens);
