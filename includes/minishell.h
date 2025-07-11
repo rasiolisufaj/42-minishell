@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
+/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/15 23:05:08 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/10 22:12:25 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,53 +19,125 @@
 # include <dirent.h>
 # include <readline/history.h>
 # include <readline/readline.h>
+# include <signal.h>
+# include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
 # include <sys/ioctl.h>
 # include <sys/stat.h>
 # include <sys/types.h>
+# include <sys/wait.h>
 # include <term.h>
 # include <termios.h>
 # include <unistd.h>
-# include <signal.h>
 
 // MACROS
 # define PROMPT "minishell> "
+# define EXIT_SUCCESS 0
+# define EXIT_FAILURE 1
 
-//PARSER
-t_node	*parse_cmd(t_token **tokens);
+# define PATH_ERROR_126 ((char *)126)
+
+extern int	g_signal;
+
+// EXECUTOR
+int			execute(t_node *ast, t_env **env);
+int			exec_cmd(t_node *ast, t_env **env);
+int			exec_pipe(t_node *ast, t_env **env);
+int			exec_and(t_node *ast, t_env **env);
+int			exec_or(t_node *ast, t_env **env);
+int			exec_group(t_node *ast, t_env **env);
+
+// BUILTINS
+int			pwd_exec(void);
+int			cd_exec(t_cmd *cmd);
+int			exit_exec(t_cmd *cmd);
+int			export_exec(t_cmd *cmd, t_env **env);
+bool		is_valid_arg(char *arg);
+
+// ENV
+t_env		*env_node(void);
+void		free_env(t_env *env);
+
+// EXPAND
+char		*expand_token(char *value, t_env *env, int last_status);
+char		*get_env_value(t_env *env, char *name);
+void		expand_ast(t_node *node, t_env *env, int last_status);
+void		expand_wildcards(t_node *node);
+int			check_quotes(char *value);
+void		free_token_content(t_token *token, char *new_val, char *old_val);
+void		update_token_links(t_token **head, t_token *prev,
+	t_token *current, t_token *next);
+char		*handle_quotes(char *value, int *i, t_env *env,
+	int last_status);
+char		*handle_escaped_dollar(int *i);
+char		*handle_variable_expression(char *value, int *i, t_env *env,
+	int last_status);
+char		*handle_literal(char *value, int *i);
+void		append_string(char **input, char *str);
+char		*consume_single_quote(char *value, int *i);
+char		*consume_double_quote(char *value, int *i, t_env *env,
+	int last_status);
+char		*consume_unquoted(char *value, int *i);
+char		*expand_variable(char *value, int *i, t_env *env,
+	t_expand_state *state);
+
+// PARSER
+t_node		*parse_cmd(t_token **tokens);
+t_node		*parse_pipe(t_token **tokens);
+t_node		*parse_group(t_token **tokens);
+t_node		*parse_and_or(t_token **tokens);
+t_node		*create_node(t_node_type type);
+t_node		*parser(const char *input, t_env *env, int last_status);
+void		free_node(t_node *node);
 
 // LEXER
-t_token	*lexer(const char *input);
-void	parenthesis_token(const char *input, int *i, t_token *new_token);
-void	redir_great_token(const char *input, int *i, t_token *new_token);
-void	redir_less_token(const char *input, int *i, t_token *new_token);
-void	pipe_token(const char *input, int *i, t_token *new_token);
-void	free_tokens(t_token *token);
-void	head_or_tail(t_token **head, t_token **tail, t_token *new_token);
-void	tokenizer(const char *input, int *i, t_token *new_token);
-char	*concat_quote(const char *input, int *i, char *quoted);
-void	handle_quote(const char *input, int *i, char **buffer);
-void	handle_escape(const char *input, int *i, char **buffer);
-void	handle_unquoted(const char *input, int *i, char **buffer);
-void	word_token(const char *input, int *i, t_token *new_token);
+t_token		*lexer(const char *input);
+void		parenthesis_token(const char *input, int *i, t_token *new_token);
+void		redir_great_token(const char *input, int *i, t_token *new_token);
+void		redir_less_token(const char *input, int *i, t_token *new_token);
+void		pipe_token(const char *input, int *i, t_token *new_token);
+void		free_tokens(t_token *token);
+void		head_or_tail(t_token **head, t_token **tail, t_token *new_token);
+void		handle_quote(const char *input, int *i, char **buffer);
+void		handle_unquoted(const char *input, int *i, char **buffer);
+void		word_token(const char *input, int *i, t_token *new_token);
+int			tokenizer(const char *input, int *i, t_token *new_token);
+char		*concat_quote(const char *input, int *i, char *quoted);
+void		handle_escape(const char *input, int *i, char **buffer);
 
 // PROMPT
-char	*get_prompt(void);
+char		*get_prompt(void);
 
 // UTILS
-void	parser_error(const char *msg);
-int		is_space(char c);
-int		is_operator(char c);
-char	*join_and_free(char *s1, char *s2);
-char	*ft_strndup(const char *src, size_t n);
+void		parser_error(char *msg);
+void		append_token(t_token **head, t_token **tail, t_token *src);
+int			is_space(char c);
+int			is_operator(char c);
+int			ft_strcmp(const char *s1, const char *s2);
+char		*join_and_free(char *s1, char *s2);
+char		*ft_strndup(const char *src, size_t n);
+bool		is_redirection(t_token_type type);
 
 // SIGNALS
-void	sigint_handler(int signo);
-void	setup_signals(void);
+void		sigint_handler(int signo);
+void		sigint_handler_waiting(int signo);
+void		setup_signals(void);
+void		setup_signals_exec(void);
+void		setup_signals_waiting(void);
 
+// EXECUTOR
+int			echo_exec(t_cmd *cmd);
+int			unset_exec(t_cmd *cmd, t_env **env);
+int			env_exec(t_env *env);
+int			handle_redir(t_token *redir_list);
+int			is_builtin(t_cmd *cmd);
+int			exec_builtin(t_cmd *cmd, t_env **env);
+int			exec_external(t_cmd *cmd, t_env *env);
+int			handle_heredoc(char *delimiter);
+void		ft_free_split(char **ptr);
 // PRINT TOKENS
-void	print_tokens(t_token *tokens);
+// void	print_tokens(t_token *tokens);
 
 #endif

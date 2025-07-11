@@ -26,7 +26,7 @@ INCLUDES := -I$(INCDIR) $(LIBFT_INC)
 LIBS := -lreadline -lhistory
 
 # Source and object files
-SRC_FILES := main.c $(shell find $(SRCDIR) -name "*.c")
+SRC_FILES := $(shell find $(SRCDIR) -name "*.c")
 OBJ_FILES := $(patsubst %.c, $(BUILDDIR)/%.o, $(SRC_FILES))
 
 # Colors

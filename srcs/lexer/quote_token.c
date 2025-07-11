@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   quote_token.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
+/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:50:44 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/10 17:41:52 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/09 14:58:30 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,29 +38,14 @@ static void	handle_escape_sequence(const char *input, int *i, int *start,
 	*start = *i;
 }
 
-char	*concat_quote(const char *input, int *i, char *quoted)
-{
-	int		start;
-	char	*after;
-
-	start = *i;
-	while (input[*i] && !is_space(input[*i]) && !is_operator(input[*i])
-		&& input[*i] != '\'' && input[*i] != '"')
-		(*i)++;
-	if (*i == start)
-		return (quoted);
-	after = ft_substr(input, start, *i - start);
-	return (join_and_free(quoted, after));
-}
-
 void	handle_quote(const char *input, int *i, char **buffer)
 {
 	int		start;
 	char	quote;
 
+	start = *i;
 	quote = input[*i];
 	(*i)++;
-	start = *i;
 	while (input[*i] && input[*i] != quote)
 	{
 		if (quote == '"' && input[*i] == '\\' && input[*i + 1])
@@ -68,8 +53,10 @@ void	handle_quote(const char *input, int *i, char **buffer)
 		else
 			(*i)++;
 	}
-	if (*i > start)
-		append_segment(input, start, *i, buffer);
+	if (input[*i] == '\0')
+		parser_error("syntax_error: unclosed quote");
 	if (input[*i] == quote)
 		(*i)++;
+	if (*i > start)
+		append_segment(input, start, *i, buffer);
 }

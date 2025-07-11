@@ -1,37 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   prompt.c                                           :+:      :+:    :+:   */
+/*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
+/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/15 22:52:49 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/06/15 23:09:37 by raisufaj         ###   ########.fr       */
+/*   Created: 2025/07/02 17:43:53 by itaharbo          #+#    #+#             */
+/*   Updated: 2025/07/02 17:44:19 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+#include "../../includes/minishell_structs.h"
 
-char	*get_prompt(void)
+int	pwd_exec(void)
 {
-	char	*line;
+	char	*path;
 
-	line = readline(PROMPT);
-	if (!line)
+	path = getcwd(NULL, 0);
+	if (path == NULL)
 	{
-		printf("\n");
-		exit(EXIT_SUCCESS);
+		perror("getcwd");
+		return (EXIT_FAILURE);
 	}
-	if (line[0] == '\0')
-	{
-		free(line);
-		return (NULL);
-	}
-	if (ft_strncmp(line, "exit", 5) == 0)
-	{
-		free(line);
-		exit(EXIT_SUCCESS);
-	}
-	add_history(line);
-	return (line);
+	write(1, path, ft_strlen(path));
+	write(1, "\n", 1);
+	free(path);
+	return (EXIT_SUCCESS);
 }

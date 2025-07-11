@@ -6,12 +6,13 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 15:35:46 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/06/12 20:14:03 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/10 22:12:04 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_STRUCTS_H
 # define MINISHELL_STRUCTS_H
+# include <stdbool.h>
 
 typedef enum e_token_type
 {
@@ -25,6 +26,7 @@ typedef enum e_token_type
 	T_OR,
 	T_PAREN_OPEN,
 	T_PAREN_CLOSE,
+	T_UNKNOWN,
 }	t_token_type;
 
 typedef struct s_token
@@ -33,6 +35,14 @@ typedef struct s_token
 	char			*value;
 	struct s_token	*next;
 }	t_token;
+
+typedef struct s_token_lists
+{
+	t_token		*args_head;
+	t_token		*args_tail;
+	t_token		*redir_head;
+	t_token		*redir_tail;
+}	t_token_lists;
 
 typedef enum e_node_type
 {
@@ -43,6 +53,7 @@ typedef enum e_node_type
 	N_GROUP,
 }	t_node_type;
 
+
 typedef struct s_node
 {
 	t_node_type		type;
@@ -51,5 +62,25 @@ typedef struct s_node
 	t_token			*tokens;
 	t_token			*redir_list;
 }	t_node;
+
+typedef struct s_env
+{
+	char			*key;
+	char			*value;
+	bool			exported;
+	struct s_env	*next;
+}	t_env;
+
+typedef struct s_expand_state
+{
+	int		last_status;
+	bool	in_double_quotes;
+}	t_expand_state;
+
+typedef struct s_cmd
+{
+	char	**args;
+	int		ac;
+}	t_cmd;
 
 #endif
