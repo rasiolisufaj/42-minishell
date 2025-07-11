@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/12 00:02:04 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/12 01:11:23 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,15 @@ t_env		*find_env(t_env *env, char *key);
 // ENV
 t_env		*env_node(void);
 void		free_env(t_env *env);
+t_env		*init_env(char **envp);
+t_env		*create_env_from_string(char *env_string);
+void		add_env_to_list(t_env **env, t_env **tail, t_env *new_env);
+
+// MAIN
+int			check_args(int argc, char **argv);
+void		init_shell(t_env **env, t_node **ast, char **envp);
+int			process_command_line(t_node **ast, t_env *env);
+void		cleanup_shell(t_node *ast, t_env *env);
 
 // EXPAND
 char		*expand_token(char *value, t_env *env, int last_status);
@@ -94,6 +103,33 @@ char		*consume_double_quote(char *value, int *i, t_env *env,
 char		*consume_unquoted(char *value, int *i);
 char		*expand_variable(char *value, int *i, t_env *env,
 				t_expand_state *state);
+
+// WILDCARDS
+t_token		*create_token_with_path(char *dir_path, char *name);
+t_token		*create_token_copy(char *name);
+void		add_token_to_list(t_token **head, t_token **tail,
+				t_token *new_token);
+void		sort_token(t_token *token);
+void		append_files_to_head(t_token **head, t_token *files);
+int			handle_star_pattern(char **p, char **n, char **star_p,
+				char **star_n);
+int			match_patt(char *pattern, char *name);
+int			should_include_entry(char *pattern, struct dirent *entry);
+bool		should_expand_wildcard(t_token *token);
+int			process_directory_entries(char *str, t_token **head,
+				t_token **tail, DIR *dir);
+t_token		*handle_simple_wildcard(char *pattern, char *dir_path);
+t_token		*handle_star_slash_pattern(char *pattern);
+t_token		*handle_joker(char *str);
+void		process_expanded_token(t_token **head, t_token **tail,
+				t_token *expanded, t_token *current);
+void		process_non_expanded_token(t_token **head, t_token **tail,
+				t_token *current);
+void		expand_wildcards_in_tokens(t_token **token_list);
+void		process_redir_wildcard_token(t_token **head, t_token **tail,
+				t_token *current);
+void		expand_wildcards_in_redir(t_token **redir_list);
+void		wildcards_cmd(t_node *node);
 
 // PARSER
 t_node		*parse_cmd(t_token **tokens);

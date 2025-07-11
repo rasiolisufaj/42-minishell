@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:14:55 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/09 16:36:19 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/12 01:05:40 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,122 +22,62 @@ static int	get_main_exit_status(void)
 	return (g_signal & 0xFF);
 }
 
-void	free_env(t_env *env)
+int	check_args(int argc, char **argv)
 {
-	t_env	*tmp;
-
-	while (env)
-	{
-		tmp = env;
-		env = env->next;
-		free(tmp->key);
-		free(tmp->value);
-		free(tmp);
-	}
+	if (argc != 1)
+		return (write(2, "Usage: ", 7), write(2, argv[0],
+				ft_strlen(argv[0])), write(2, "\n", 1), 1);
+	return (0);
 }
 
-t_env	*env_node(void)
+int	process_command_line(t_node **ast, t_env *env)
 {
-	t_env	*new_node;
+	char	*line;
 
-	new_node = malloc(sizeof(t_env));
-	if (!new_node)
-		return (NULL);
-	new_node->key = NULL;
-	new_node->value = NULL;
-	new_node->exported = true;
-	new_node->next = NULL;
-	return (new_node);
+	free_node(*ast);
+	*ast = NULL;
+	line = get_prompt();
+	if (!line)
+		return (0);
+	*ast = parser(line, env, g_signal);
+	free(line);
+	if (!*ast)
+	{
+		g_signal = 2;
+		return (1);
+	}
+	return (2);
 }
 
-t_env	*init_env(char **envp)
+void	cleanup_shell(t_node *ast, t_env *env)
 {
-	t_env	*new_env;
-	t_env	*env;
-	t_env	*tail;
-	char	*eq_sign;
-	int		i;
-	size_t	len;
-
-	i = 0;
-	env = NULL;
-	tail = NULL;
-	while (envp[i])
-	{
-		eq_sign = ft_strchr(envp[i], '=');
-		if (!eq_sign)
-		{
-			ft_putstr_fd(
-				"minishell: invalid environment variable: ", 2);
-			ft_putendl_fd(envp[i], 2);
-			i++;
-			continue ;
-		}
-		new_env = env_node();
-		if (!new_env)
-			return (free_env(env), ft_putendl_fd(
-					"minishell: memory allocation failed", 2), NULL);
-		len = eq_sign - envp[i];
-		new_env->key = ft_substr(envp[i], 0, len);
-		if (!new_env->key)
-			return (free(new_env), free_env(env), ft_putendl_fd(
-					"minishell: memory allocation failed", 2), NULL);
-		new_env->value = ft_strdup(eq_sign + 1);
-		if (!new_env->value)
-			return (free(new_env->key), free(new_env), free_env(env),
-				ft_putendl_fd("minishell: memory allocation failed", 2), NULL);
-		new_env->next = NULL;
-		if (!env)
-		{
-			env = new_env;
-			tail = new_env;
-		}
-		else
-		{
-			tail->next = new_env;
-			tail = new_env;
-		}
-		i++;
-	}
-	return (env);
+	free_node(ast);
+	free_env(env);
+	rl_clear_history();
 }
 
 int	main(int argc, char **argv, char **envp)
 {
-	char	*line;
 	t_node	*ast;
 	t_env	*env;
+	int		status;
 
-	if (argc != 1)
-		return (write(2, "Usage: ", 7), write(2, argv[0],
-				ft_strlen(argv[0])), write(2, "\n", 1), 1);
-	env = NULL;
-	ast = NULL;
-	g_signal = 0;
-	setup_signals();
-	env = init_env(envp);
+	if (check_args(argc, argv))
+		return (1);
+	init_shell(&env, &ast, envp);
 	if (!env)
 		return (1);
 	while (1)
 	{
-		free_node(ast);
-		ast = NULL;
-		line = get_prompt();
-		if (!line)
+		status = process_command_line(&ast, env);
+		if (status == 0)
 			break ;
-		ast = parser(line, env, g_signal);
-		free(line);
-		if (!ast)
-		{
-			g_signal = 2;
+		if (status == 1)
 			continue ;
-		}
 		g_signal = execute(ast, &env);
 		if (g_signal >= 255)
 			break ;
 	}
-	free_node(ast);
-	free_env(env);
-	rl_clear_history();
+	cleanup_shell(ast, env);
 	return (get_main_exit_status());
 }
