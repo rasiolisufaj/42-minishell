@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/11 21:17:35 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/12 00:02:04 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,6 @@
 # define EXIT_SUCCESS 0
 # define EXIT_FAILURE 1
 
-# define PATH_ERROR_126 ((char *)126)
-
 extern int	g_signal;
 
 // EXECUTOR
@@ -53,8 +51,17 @@ int			exec_group(t_node *ast, t_env **env);
 int			pwd_exec(void);
 int			cd_exec(t_cmd *cmd);
 int			exit_exec(t_cmd *cmd);
+int			cmp_env(t_env *a, t_env *b);
+int			add_exported(char *arg, t_env **env);
 int			export_exec(t_cmd *cmd, t_env **env);
+int			export_exec(t_cmd *cmd, t_env **env);
+size_t		count_values(t_env *env);
 bool		is_valid_arg(char *arg);
+void		print_exported_value(t_env **sorted_exports);
+void		count_exports(t_env *env, t_env **sorted_exports, size_t count);
+void		sorted_algo(t_env **sorted_exports, t_env *env, size_t count);
+void		get_exported_env(t_env *env);
+t_env		*find_env(t_env *env, char *key);
 
 // ENV
 t_env		*env_node(void);
@@ -67,16 +74,15 @@ void		expand_ast(t_node *node, t_env *env, int last_status);
 void		expand_wildcards(t_node *node);
 int			check_quotes(char *value);
 void		free_token_content(t_token *token, char *new_val, char *old_val);
-void		update_token_links(t_token **head, t_token *prev,
-				t_token *current, t_token *next);
+void		update_token_links(t_token **head, t_token *prev, t_token *current,
+				t_token *next);
 void		handle_valid_token(t_token **prev, t_token **current,
 				char *new_value, char *old_value);
 t_token		*create_word_tokens(char *expanded_value);
-void		word_splitting(t_token **list, t_token **prev,
-				t_token **current, char *new_value);
+void		word_splitting(t_token **list, t_token **prev, t_token **current,
+				char *new_value);
 int			should_word_split(char *new_value, char *old_value);
-char		*handle_quotes(char *value, int *i, t_env *env,
-				int last_status);
+char		*handle_quotes(char *value, int *i, t_env *env, int last_status);
 char		*handle_escaped_dollar(int *i);
 char		*handle_variable_expression(char *value, int *i, t_env *env,
 				int last_status);
@@ -106,11 +112,10 @@ void		redir_less_token(const char *input, int *i, t_token *new_token);
 void		pipe_token(const char *input, int *i, t_token *new_token);
 void		free_tokens(t_token *token);
 void		head_or_tail(t_token **head, t_token **tail, t_token *new_token);
-void		handle_quote(const char *input, int *i, char **buffer);
+bool		handle_quote(const char *input, int *i, char **buffer);
 void		handle_unquoted(const char *input, int *i, char **buffer);
-void		word_token(const char *input, int *i, t_token *new_token);
+bool		word_token(const char *input, int *i, t_token *new_token);
 int			tokenizer(const char *input, int *i, t_token *new_token);
-char		*concat_quote(const char *input, int *i, char *quoted);
 void		handle_escape(const char *input, int *i, char **buffer);
 
 // PROMPT
@@ -144,7 +149,8 @@ int			exec_builtin(t_cmd *cmd, t_env **env);
 int			exec_external(t_cmd *cmd, t_env *env);
 int			handle_heredoc(char *delimiter);
 void		ft_free_split(char **ptr);
-// PRINT TOKENS
-// void	print_tokens(t_token *tokens);
+t_cmd		*init_cmd(t_node *ast);
+char		*find_path(char *cmd, t_env *env);
+char		**env_to_envp(t_env *env);
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
+/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 15:42:19 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/07 19:48:29 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/11 23:43:39 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,7 @@ int	unset_exec(t_cmd *cmd, t_env **env)
 		}
 		else
 		{
-			if (unset_cpy(cmd, env, i) == 1)
-				break ;
+			unset_cpy(cmd, env, i);
 		}
 		i++;
 	}

@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 17:30:55 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/09 17:08:23 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/11 15:15:08 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 #include "../../includes/minishell_structs.h"
-
+/*
+// Counts how many env nodes are marked as exported
 size_t	count_values(t_env *env)
 {
 	t_env	*current;
@@ -31,6 +32,7 @@ size_t	count_values(t_env *env)
 	return (count);
 }
 
+// Fills an array sorted_exports with exported t_env* pointers
 void	count_exports(t_env *env, t_env **sorted_exports, size_t count)
 {
 	t_env	*current;
@@ -47,6 +49,7 @@ void	count_exports(t_env *env, t_env **sorted_exports, size_t count)
 	sorted_exports[count] = NULL;
 }
 
+// Compares two t_env variables
 int	cmp_env(t_env *a, t_env *b)
 {
 	int	cmp_res;
@@ -63,6 +66,7 @@ int	cmp_env(t_env *a, t_env *b)
 	return (ft_strcmp(a->value, b->value));
 }
 
+// Sorts the sorted_exports array by using bubble sort and cmp_env
 void	sorted_algo(t_env **sorted_exports, t_env *env, size_t count)
 {
 	size_t	i;
@@ -91,6 +95,7 @@ void	sorted_algo(t_env **sorted_exports, t_env *env, size_t count)
 	}
 }
 
+// Print the exported variables
 void	print_exported_value(t_env **sorted_exports)
 {
 	t_env	**current;
@@ -112,7 +117,9 @@ void	print_exported_value(t_env **sorted_exports)
 		current++;
 	}
 }
+*/
 
+// Display all exported variables in sorted order
 void	get_exported_env(t_env *env)
 {
 	size_t	count;
@@ -132,6 +139,7 @@ void	get_exported_env(t_env *env)
 	free(sorted_exports);
 }
 
+// Checks if an argument is a valid environment variable name
 bool	is_valid_arg(char *arg)
 {
 	size_t	i;
@@ -150,6 +158,7 @@ bool	is_valid_arg(char *arg)
 	return (TRUE);
 }
 
+// Searches the linked list for a node with a matching key
 t_env	*find_env(t_env *env, char *key)
 {
 	t_env	*current;
@@ -164,61 +173,6 @@ t_env	*find_env(t_env *env, char *key)
 		current = current->next;
 	}
 	return (NULL);
-}
-
-int	add_exported(char *arg, t_env **env)
-{
-	t_env	*new_env;
-	t_env	*exist;
-	char	*eq_sign;
-	char	*key;
-	char	*new_val;
-	size_t	len;
-
-	eq_sign = ft_strchr(arg, '=');
-	if (!eq_sign)
-		len = ft_strlen(arg);
-	else
-		len = eq_sign - arg;
-	key = ft_substr(arg, 0, len);
-	if (!key)
-		return (ft_putendl_fd(
-				"minishell: memory allocation failed", 2), EXIT_FAILURE);
-	exist = find_env(*env, key);
-	if (exist)
-	{
-		if (eq_sign)
-		{
-			new_val = ft_strdup(eq_sign + 1);
-			if (!new_val)
-				return (free(key),
-					ft_putendl_fd("minishell: memory allocation failed", 2),
-					EXIT_FAILURE);
-		}
-		else
-			new_val = NULL;
-		free(exist->value);
-		exist->value = new_val;
-		exist->exported = true;
-		free(key);
-		return (EXIT_SUCCESS);
-	}
-	new_env = env_node();
-	if (!new_env)
-		return (free(key), ft_putendl_fd(
-				"minishell: memory allocation failed", 2), EXIT_FAILURE);
-	new_env->key = key;
-	if (eq_sign)
-	{
-		new_env->value = ft_strdup(eq_sign + 1);
-		if (!new_env->value)
-			return (free(new_env->key), free(new_env), free(key),
-				ft_putendl_fd("minishell: memory allocation failed", 2),
-				EXIT_FAILURE);
-	}
-	new_env->next = *env;
-	*env = new_env;
-	return (EXIT_SUCCESS);
 }
 
 int	export_exec(t_cmd *cmd, t_env **env)

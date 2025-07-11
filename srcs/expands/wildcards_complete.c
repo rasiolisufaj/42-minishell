@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 09:38:42 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/10 17:38:02 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/11 23:45:43 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,11 +187,13 @@ t_token	*handle_simple_wildcard(char *pattern, char *dir_path)
 
 void	append_files_to_head(t_token **head, t_token *files)
 {
+	t_token	*tail;
+
 	if (!*head)
 		*head = files;
 	else
 	{
-		t_token *tail = *head;
+		tail = *head;
 		while (tail->next)
 			tail = tail->next;
 		tail->next = files;
@@ -200,11 +202,11 @@ void	append_files_to_head(t_token **head, t_token *files)
 
 t_token	*handle_star_slash_pattern(char *pattern)
 {
-	t_token	*dirs;
-	t_token	*head;
-	t_token	*current;
-	t_token *files;
-	struct stat statbuf;
+	t_token		*dirs;
+	t_token		*head;
+	t_token		*current;
+	t_token		*files;
+	struct stat	statbuf;
 
 	dirs = handle_simple_wildcard("*", ".");
 	head = NULL;
@@ -280,6 +282,11 @@ void	process_non_expanded_token(t_token **head, t_token **tail,
 	}
 }
 
+static bool	token_is_quoted(const char *value)
+{
+	return (ft_strchr(value, '\'') != NULL || ft_strchr(value, '"') != NULL);
+}
+
 void	wildcards_cmd(t_node *node)
 {
 	t_token	*head;
@@ -294,7 +301,7 @@ void	wildcards_cmd(t_node *node)
 	while (current)
 	{
 		next = current->next;
-		if (ft_strchr(current->value, '*'))
+		if (!token_is_quoted(current->value) && ft_strchr(current->value, '*'))
 		{
 			expanded = handle_joker(current->value);
 			if (expanded)

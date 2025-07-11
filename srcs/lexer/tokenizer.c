@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
+/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:46:23 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/06 23:33:08 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/11 22:08:30 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,10 @@ int	tokenizer(const char *input, int *i, t_token *new_token)
 	else if (input[*i] == '(' || input[*i] == ')')
 		parenthesis_token(input, i, new_token);
 	else
-		word_token(input, i, new_token);
+	{
+		if (!word_token(input, i, new_token))
+			return (1);
+	}
 	return (0);
 }
 

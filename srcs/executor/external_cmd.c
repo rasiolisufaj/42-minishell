@@ -6,156 +6,12 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 18:12:12 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/10 16:33:46 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/12 00:01:32 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 #include "../../includes/minishell_structs.h"
-
-bool	is_directory(char *path)
-{
-	struct stat	statbuf;
-
-	if (stat(path, &statbuf) == -1)
-		return (false);
-	return (S_ISDIR(statbuf.st_mode));
-}
-
-char	*find_path(char *cmd, t_env *env)
-{
-	char	*path;
-	char	*full_path;
-	char	*tmp;
-	char	**new_paths;
-	int		i;
-
-	if (!cmd || !env)
-		return (NULL);
-	if (ft_strchr(cmd, '/'))
-	{
-		if (access(cmd, F_OK) != 0)
-			return (ft_putstr_fd("minishell: ", 2), ft_putstr_fd(cmd, 2),
-				ft_putendl_fd(": No such file or directory", 2), NULL);
-		if (is_directory(cmd))
-			return (ft_putstr_fd("minishell: ", 2), ft_putstr_fd(cmd, 2),
-				ft_putendl_fd(": Is a directory", 2), PATH_ERROR_126);
-		if (access(cmd, X_OK) != 0)
-		{
-			return (ft_putstr_fd("minishell: ", 2), ft_putstr_fd(cmd, 2),
-				ft_putendl_fd(": Permission denied", 2), PATH_ERROR_126);
-		}
-		tmp = ft_strdup(cmd);
-		if (!tmp)
-			return (ft_putendl_fd("minishell: memory allocation failed", 2),
-				NULL);
-		return (tmp);
-	}
-	path = get_env_value(env, "PATH");
-	if (!path)
-		return (NULL);
-	new_paths = ft_split(path, ':');
-	if (!new_paths)
-		return (NULL);
-	i = 0;
-	while (new_paths[i])
-	{
-		tmp = ft_strjoin(new_paths[i], "/");
-		if (!tmp)
-			return (ft_free_split(new_paths), NULL);
-		full_path = ft_strjoin(tmp, cmd);
-		free(tmp);
-		if (!full_path)
-			return (ft_free_split(new_paths), NULL);
-		if (access(full_path, F_OK) == 0)
-		{
-			if (is_directory(full_path))
-			{
-				free(full_path);
-				i++;
-				continue ;
-			}
-			if (access(full_path, X_OK) == 0)
-				return (ft_free_split(new_paths), full_path);
-		}
-		free(full_path);
-		i++;
-	}
-	ft_free_split(new_paths);
-	return (NULL);
-}
-
-int	count_env_nodes(t_env *env)
-{
-	int	count;
-
-	count = 0;
-	while (env)
-	{
-		if (env->exported)
-			count++;
-		env = env->next;
-	}
-	return (count);
-}
-
-void	free_envp_part(char **envp, int start)
-{
-	int	i;
-
-	if (!envp)
-		return ;
-	i = 0;
-	while (i < start)
-	{
-		free(envp[i]);
-		i++;
-	}
-	free(envp);
-}
-
-static char	*create_env_entry(t_env *env_node)
-{
-	char	*tmp;
-	char	*entry;
-
-	tmp = ft_strjoin(env_node->key, "=");
-	if (!tmp)
-		return (NULL);
-	entry = ft_strjoin(tmp, env_node->value);
-	free(tmp);
-	if (!entry)
-		return (NULL);
-	return (entry);
-}
-
-char	**env_to_envp(t_env *env)
-{
-	t_env	*current;
-	char	**envp;
-	int		i;
-	int		count;
-
-	count = count_env_nodes(env);
-	envp = malloc(sizeof(char *) * (count + 1));
-	if (!envp)
-		return (NULL);
-	current = env;
-	i = 0;
-	while (current && i < count)
-	{
-		if (current->exported)
-		{
-			envp[i] = create_env_entry(current);
-			if (!envp[i])
-				return (free_envp_part(envp, i), NULL);
-			i++;
-		}
-		current = current->next;
-	}
-	envp[i] = NULL;
-	return (envp);
-}
 
 void	child_external(char *path_cmd, char **envp, t_cmd *cmd)
 {
@@ -215,7 +71,7 @@ int	exec_external(t_cmd *cmd, t_env *env)
 	path_cmd = find_path(cmd->args[0], env);
 	if (!path_cmd)
 		return (wrong_path_cmd(cmd->args[0]), 127);
-	if (path_cmd == PATH_ERROR_126)
+	if (path_cmd == (char *)126)
 		return (126);
 	envp = env_to_envp(env);
 	if (!envp)

@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 19:07:56 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/07 17:54:56 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/11 23:08:28 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@ void	heredoc_child(int pipe_fd[2], char *delimiter)
 		line = readline("> ");
 		if (!line || ft_strcmp(line, delimiter) == 0)
 		{
-			free(line);
+			if (line)
+				free(line);
 			break ;
 		}
 		write(pipe_fd[1], line, ft_strlen(line));
@@ -33,7 +34,7 @@ void	heredoc_child(int pipe_fd[2], char *delimiter)
 		free(line);
 	}
 	close(pipe_fd[1]);
-	exit(0);
+	_exit(0);
 }
 
 void	sig_heredoc(int status, int *sig)
