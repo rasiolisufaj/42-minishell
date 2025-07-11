@@ -6,19 +6,12 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 15:42:19 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/11 23:43:39 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/12 00:23:19 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 #include "../../includes/minishell_structs.h"
-
-void	isnot_valid_msg(char *arg)
-{
-	ft_putstr_fd("unset: ", 2);
-	ft_putstr_fd(arg, 2);
-	ft_putendl_fd(": not a valid identifier", 2);
-}
 
 int	unset_cpy(t_cmd *cmd, t_env **env, int i)
 {
@@ -48,25 +41,15 @@ int	unset_cpy(t_cmd *cmd, t_env **env, int i)
 
 int	unset_exec(t_cmd *cmd, t_env **env)
 {
-	int		last_status;
 	int		i;
 
 	if (env == NULL || cmd == NULL || cmd->args == NULL)
 		return (EXIT_FAILURE);
-	last_status = EXIT_SUCCESS;
 	i = 1;
 	while (cmd->args[i])
 	{
-		if (is_valid_arg(cmd->args[i]) == false)
-		{
-			isnot_valid_msg(cmd->args[i]);
-			last_status = EXIT_FAILURE;
-		}
-		else
-		{
-			unset_cpy(cmd, env, i);
-		}
+		unset_cpy(cmd, env, i);
 		i++;
 	}
-	return (last_status);
+	return (EXIT_SUCCESS);
 }
