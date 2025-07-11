@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 19:01:01 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/10 19:57:40 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/11 20:55:21 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,5 +36,31 @@ void	update_token_links(t_token **head, t_token *prev,
 		prev->next = next;
 	else
 		*head = next;
-	current = next;
+	if (current)
+		current = next;
+}
+
+void	handle_valid_token(t_token **prev, t_token **current,
+	char *new_value, char *old_value)
+{
+	(*current)->value = new_value;
+	free(old_value);
+	*prev = *current;
+	*current = (*current)->next;
+}
+
+int	should_word_split(char *new_value, char *old_value)
+{
+	int	i;
+
+	if (!new_value || !*new_value || check_quotes(old_value))
+		return (0);
+	i = 0;
+	while (new_value[i])
+	{
+		if (new_value[i] == ' ' || new_value[i] == '\t')
+			return (1);
+		i++;
+	}
+	return (0);
 }

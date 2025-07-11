@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 20:12:27 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/10 23:12:49 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/11 20:16:54 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,10 +95,8 @@ char	*expand_variable(char *value, int *i, t_env *env,
 	t_expand_state *state)
 {
 	char	*part;
-	int		start;
 
 	(*i)++;
-	start = *i;
 	if (value[*i] == '?' || value[*i] == '*' || value[*i] == '@'
 		|| ft_isdigit(value[*i]))
 		part = ev_handle_dollar(value, i, state);

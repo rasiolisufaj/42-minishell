@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 16:28:38 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/10 23:12:27 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/11 21:29:20 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,59 +50,56 @@ char	*get_env_value(t_env *env, char *var_name)
 
 void	expand_token_list(t_token **token_list, t_env *env, int last_status)
 {
-	t_token	*current;
-	t_token	*next;
-	t_token	*prev;
-	char	*old_value;
-	char	*new_value;
+	t_token_ptrs	ptrs;
+	char			*old_value;
+	char			*new_value;
 
-	current = *token_list;
-	while (current)
+	ptrs.current = *token_list;
+	ptrs.prev = NULL;
+	while (ptrs.current)
 	{
-		next = current->next;
-		old_value = current->value;
+		ptrs.next = ptrs.current->next;
+		old_value = ptrs.current->value;
 		new_value = expand_token(old_value, env, last_status);
 		if (!new_value)
 			return (ft_putendl_fd("Error: Memory allocation failed", 2));
 		if (!*new_value && check_quotes(old_value) == 0)
 		{
-			free_token_content(current, new_value, old_value);
-			update_token_links(token_list, prev, current, next);
+			free_token_content(ptrs.current, new_value, old_value);
+			update_token_links(token_list, ptrs.prev, ptrs.current, ptrs.next);
+			ptrs.current = ptrs.next;
 			continue ;
 		}
-		current->value = new_value;
-		free(old_value);
-		prev = current;
-		current = next;
+		if (should_word_split(new_value, old_value))
+			word_splitting(token_list, &ptrs.prev, &ptrs.current, new_value);
+		else
+			handle_valid_token(&ptrs.prev, &ptrs.current, new_value, old_value);
 	}
 }
 
 void	expand_redir_list(t_token **redir_list, t_env *env, int last_status)
 {
-	t_token	*current;
-	t_token	*next;
-	t_token	*prev;
-	char	*old_value;
-	char	*new_value;
+	t_token_ptrs	ptrs;
+	char			*old_value;
+	char			*new_value;
 
-	current = *redir_list;
-	while (current)
+	ptrs.current = *redir_list;
+	ptrs.prev = NULL;
+	while (ptrs.current)
 	{
-		next = current->next;
-		old_value = current->value;
+		ptrs.next = ptrs.current->next;
+		old_value = ptrs.current->value;
 		new_value = expand_token(old_value, env, last_status);
 		if (!new_value)
 			return (ft_putendl_fd("Error: Memory allocation failed", 2));
 		if (!*new_value)
 		{
-			free_token_content(current, new_value, old_value);
-			update_token_links(redir_list, prev, current, next);
+			free_token_content(ptrs.current, new_value, old_value);
+			update_token_links(redir_list, ptrs.prev, ptrs.current, ptrs.next);
+			ptrs.current = ptrs.next;
 			continue ;
 		}
-		current->value = new_value;
-		free(old_value);
-		prev = current;
-		current = next;
+		handle_valid_token(&ptrs.prev, &ptrs.current, new_value, old_value);
 	}
 }
 

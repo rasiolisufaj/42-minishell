@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/10 22:12:25 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/11 21:17:35 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,20 +68,26 @@ void		expand_wildcards(t_node *node);
 int			check_quotes(char *value);
 void		free_token_content(t_token *token, char *new_val, char *old_val);
 void		update_token_links(t_token **head, t_token *prev,
-	t_token *current, t_token *next);
+				t_token *current, t_token *next);
+void		handle_valid_token(t_token **prev, t_token **current,
+				char *new_value, char *old_value);
+t_token		*create_word_tokens(char *expanded_value);
+void		word_splitting(t_token **list, t_token **prev,
+				t_token **current, char *new_value);
+int			should_word_split(char *new_value, char *old_value);
 char		*handle_quotes(char *value, int *i, t_env *env,
-	int last_status);
+				int last_status);
 char		*handle_escaped_dollar(int *i);
 char		*handle_variable_expression(char *value, int *i, t_env *env,
-	int last_status);
+				int last_status);
 char		*handle_literal(char *value, int *i);
 void		append_string(char **input, char *str);
 char		*consume_single_quote(char *value, int *i);
 char		*consume_double_quote(char *value, int *i, t_env *env,
-	int last_status);
+				int last_status);
 char		*consume_unquoted(char *value, int *i);
 char		*expand_variable(char *value, int *i, t_env *env,
-	t_expand_state *state);
+				t_expand_state *state);
 
 // PARSER
 t_node		*parse_cmd(t_token **tokens);
@@ -119,6 +125,7 @@ int			ft_strcmp(const char *s1, const char *s2);
 char		*join_and_free(char *s1, char *s2);
 char		*ft_strndup(const char *src, size_t n);
 bool		is_redirection(t_token_type type);
+int			ft_isspace(int c);
 
 // SIGNALS
 void		sigint_handler(int signo);

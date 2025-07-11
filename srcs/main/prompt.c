@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 22:52:49 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/08 19:01:44 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/11 21:18:54 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ char	*get_prompt(void)
 		if (line[0] == '\0')
 		{
 			free(line);
-			continue;
+			continue ;
 		}
 		i = 0;
 		while (line[i] && line[i] == ' ')
@@ -33,7 +33,7 @@ char	*get_prompt(void)
 		if (line[i] == '\0')
 		{
 			free(line);
-			continue;
+			continue ;
 		}
 		add_history(line);
 		return (line);

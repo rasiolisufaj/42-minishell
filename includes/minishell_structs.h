@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 15:35:46 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/10 22:12:04 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/11 21:28:35 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,6 @@ typedef enum e_node_type
 	N_GROUP,
 }	t_node_type;
 
-
 typedef struct s_node
 {
 	t_node_type		type;
@@ -76,6 +75,13 @@ typedef struct s_expand_state
 	int		last_status;
 	bool	in_double_quotes;
 }	t_expand_state;
+
+typedef struct s_token_ptrs
+{
+	t_token	*current;
+	t_token	*prev;
+	t_token	*next;
+}	t_token_ptrs;
 
 typedef struct s_cmd
 {
