@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_and_or.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
+/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 16:37:08 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/07 16:55:04 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/12 22:33:05 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ t_node	*parse_and_or(t_token **tokens)
 			return (handle_parse_error(left, type));
 		right = parse_pipe(tokens);
 		if (!right)
-			return (handle_parse_error(left, type));
+			return (free_node(left), NULL);
 		left = create_logic_node(type, left, right);
 		if (!left)
 			return (NULL);

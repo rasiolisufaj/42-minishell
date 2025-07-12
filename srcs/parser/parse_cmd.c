@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 17:01:36 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/12 20:26:27 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/12 22:47:52 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,16 @@ static bool	handle_redirection(t_token **tokens, t_token **redir_head,
 		(*tokens) = (*tokens)->next;
 		return (true);
 	}
+	if (!(*tokens))
+		parser_error("syntax error near unexpected token `newline'");
+	else if ((*tokens)->type == T_AND)
+		parser_error("syntax error near unexpected token `&&'");
+	else if ((*tokens)->type == T_OR)
+		parser_error("syntax error near unexpected token `||'");
+	else if ((*tokens)->type == T_PIPE)
+		parser_error("syntax error near unexpected token `|'");
+	else
+		parser_error("syntax error near unexpected token");
 	return (false);
 }
 
@@ -69,7 +79,6 @@ t_node	*parse_cmd(t_token **tokens)
 	{
 		free_tokens(lists.args_head);
 		free_tokens(lists.redir_head);
-		parser_error("syntax error after redirection");
 		return (NULL);
 	}
 	node = create_node(N_CMD);
