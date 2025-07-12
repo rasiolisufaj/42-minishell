@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:55 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/09 19:32:15 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/12 20:47:47 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@ int	exec_group(t_node *ast, t_env **env)
 	{
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
+		if (ast->redir_list && handle_redir(ast->redir_list) != 0)
+			exit(1);
 		status = execute(ast->left, env);
 		exit(status);
 	}
@@ -61,7 +63,11 @@ int	exec_group(t_node *ast, t_env **env)
 	if (WIFEXITED(wstatus))
 		return (WEXITSTATUS(wstatus));
 	else if (WIFSIGNALED(wstatus))
+	{
+		if (WTERMSIG(wstatus) == SIGQUIT)
+			ft_putendl_fd("Quit (core dumped)", 2);
 		return (128 + WTERMSIG(wstatus));
+	}
 	return (1);
 }
 

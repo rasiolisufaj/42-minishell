@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_cmd.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
+/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 17:01:36 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/07 18:47:13 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/12 20:26:27 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,52 +83,3 @@ t_node	*parse_cmd(t_token **tokens)
 	node->redir_list = lists.redir_head;
 	return (node);
 }
-
-// t_node	*parse_cmd(t_token **tokens)
-// {
-// 	t_token	*args_head;
-// 	t_token	*args_tail;
-// 	t_token	*redir_head;
-// 	t_token	*redir_tail;
-// 	t_node	*node;
-
-// 	if (!tokens || !*tokens)
-// 		return (NULL);
-// 	args_head = NULL;
-// 	args_tail = NULL;
-// 	redir_head = NULL;
-// 	redir_tail = NULL;
-// 	if (*tokens && (*tokens)->type == T_PAREN_OPEN)
-// 		return (parse_group(tokens));
-// 	while (*tokens && ((*tokens)->type == T_WORD
-// 			|| is_redirection((*tokens)->type)))
-// 	{
-// 		if (is_redirection((*tokens)->type))
-// 		{
-// 			append_token(&redir_head, &redir_tail, *tokens);
-// 			(*tokens) = (*tokens)->next;
-// 			if ((*tokens) && (*tokens)->type == T_WORD)
-// 			{
-// 				append_token(&redir_head, &redir_tail, *tokens);
-// 				(*tokens) = (*tokens)->next;
-// 			}
-// 			else
-// 			{
-// 				free_tokens(args_head);
-// 				free_tokens(redir_head);
-// 				return (parser_error("syntax error after redirection"), NULL);
-// 			}
-// 		}
-// 		else
-// 		{
-// 			append_token(&args_head, &args_tail, *tokens);
-// 			*tokens = (*tokens)->next;
-// 		}
-// 	}
-// 	node = create_node(N_CMD);
-// 	if (!node)
-// 		return (NULL);
-// 	node->tokens = args_head;
-// 	node->redir_list = redir_head;
-// 	return (node);
-// }

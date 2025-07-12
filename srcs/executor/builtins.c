@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 19:09:36 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/08 18:05:22 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/12 18:17:14 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	exec_builtin(t_cmd *cmd, t_env **env)
 	if (!cmd || !cmd->args || !cmd->args[0])
 		return (1);
 	if (ft_strcmp(cmd->args[0], "cd") == 0)
-		return (cd_exec(cmd));
+		return (cd_exec(cmd, *env));
 	else if (ft_strcmp(cmd->args[0], "echo") == 0)
 		return (echo_exec(cmd));
 	else if (ft_strcmp(cmd->args[0], "pwd") == 0)

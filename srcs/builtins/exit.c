@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:25:12 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/10 16:29:36 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/12 19:57:40 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,12 @@ int	exit_exec(t_cmd *cmd)
 	int	exit_status;
 
 	exit_status = 0;
-	if (cmd->ac > 2)
-		return (write(2, "exit: too many arguments\n", 25), 1);
-	else if (cmd->ac == 2)
+	if (cmd->ac >= 2)
 	{
 		if (is_numeric_argument(cmd->args[1]) != 0)
 			exit_status = 2;
+		else if (cmd->ac > 2)
+			return (write(2, "exit: too many arguments\n", 25), 1);
 		else
 			exit_status = ft_atoi(cmd->args[1]) & 0xFF;
 	}
