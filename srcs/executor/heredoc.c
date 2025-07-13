@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 19:07:56 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/13 16:58:11 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/13 23:25:26 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ static bool	child_readline(char *stop, int pipe_fd[2])
 	return (TRUE);
 }
 
-static void	heredoc_child(int pipe_fd[2], t_env *env, t_node *ast,
+void	heredoc_child(int pipe_fd[2], t_env *env, t_node *ast,
 		t_heredoc_args *args)
 {
 	char	*stop;

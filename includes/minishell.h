@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/13 21:15:10 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/13 23:34:52 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,5 +192,11 @@ void		ft_free_split(char **ptr);
 t_cmd		*init_cmd(t_node *ast);
 char		*find_path(char *cmd, t_env *env);
 char		**env_to_envp(t_env *env);
+void		heredoc_child(int pipe_fd[2], t_env *env, t_node *ast,
+				t_heredoc_args *args);
+int			handle_mult_heredoc(char *delimiter, t_env *env, t_node *ast,
+				t_cmd *cmd);
+int			count_heredocs(t_token *redir_list);
+void		sig_heredoc(int status, int *sig);
 
 #endif

@@ -6,20 +6,12 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:55 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/13 17:05:20 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/13 21:33:03 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 #include "../../includes/minishell_structs.h"
-
-int	exec_pipe(t_node *ast, t_env **env)
-{
-	(void)env;
-	(void)ast;
-	printf("exec_pipe not implemented yet\n");
-	return (0);
-}
 
 int	exec_and(t_node *ast, t_env **env)
 {
