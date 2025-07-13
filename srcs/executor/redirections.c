@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 19:05:19 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/07 17:54:42 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/13 14:07:05 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,16 +69,16 @@ int	redir_opening(int *fd, t_token *current)
 	return (close(*fd), 0);
 }
 
-int	handle_redir(t_token *redir_list)
+int	handle_redir(t_env *env, t_node *ast, t_cmd *cmd)
 {
 	t_token	*current;
 	int		fd;
 
-	if (!redir_list)
+	if (!ast->redir_list)
 		return (0);
-	if (redir_error(redir_list))
+	if (redir_error(ast->redir_list))
 		return (1);
-	current = redir_list;
+	current = ast->redir_list;
 	while (current)
 	{
 		if (current->type == T_REDIR_OUT || current->type == T_REDIR_APPEND
@@ -89,7 +89,7 @@ int	handle_redir(t_token *redir_list)
 		}
 		else if (current->type == T_HEREDOC)
 		{
-			if (handle_heredoc(current->next->value) != 0)
+			if (handle_heredoc(current->next->value, env, ast, cmd) != 0)
 				return (1);
 		}
 		current = current->next;

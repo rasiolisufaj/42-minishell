@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 15:35:46 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/11 21:28:35 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/13 17:02:50 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,5 +88,11 @@ typedef struct s_cmd
 	char	**args;
 	int		ac;
 }	t_cmd;
+
+typedef struct s_heredoc_args
+{
+	t_cmd	*cmd;
+	char	*delimiter;
+}	t_heredoc_args;
 
 #endif

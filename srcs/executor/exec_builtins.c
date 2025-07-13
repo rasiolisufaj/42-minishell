@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtins.c                                         :+:      :+:    :+:   */
+/*   exec_builtins.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 19:09:36 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/12 18:17:14 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/13 20:07:44 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int	exec_builtin(t_cmd *cmd, t_env **env)
 	else if (ft_strcmp(cmd->args[0], "echo") == 0)
 		return (echo_exec(cmd));
 	else if (ft_strcmp(cmd->args[0], "pwd") == 0)
-		return (pwd_exec());
+		return (pwd_exec(*env));
 	else if (ft_strcmp(cmd->args[0], "export") == 0)
 		return (export_exec(cmd, env));
 	else if (ft_strcmp(cmd->args[0], "unset") == 0)

@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/12 18:17:13 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/13 21:15:10 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,11 @@ int			exec_or(t_node *ast, t_env **env);
 int			exec_group(t_node *ast, t_env **env);
 
 // BUILTINS
-int			pwd_exec(void);
+int			pwd_exec(t_env *env);
 int			cd_exec(t_cmd *cmd, t_env *env);
+bool		validate_path_exists(char *path);
+bool		change_to_directory(char *path);
+void		set_env_value(t_env **env, const char *key, const char *value);
 int			exit_exec(t_cmd *cmd);
 int			cmp_env(t_env *a, t_env *b);
 int			add_exported(char *arg, t_env **env);
@@ -179,11 +182,12 @@ void		setup_signals_waiting(void);
 int			echo_exec(t_cmd *cmd);
 int			unset_exec(t_cmd *cmd, t_env **env);
 int			env_exec(t_env *env);
-int			handle_redir(t_token *redir_list);
+int			handle_redir(t_env *env, t_node *ast, t_cmd *cmd);
 int			is_builtin(t_cmd *cmd);
 int			exec_builtin(t_cmd *cmd, t_env **env);
 int			exec_external(t_cmd *cmd, t_env *env);
-int			handle_heredoc(char *delimiter);
+int			handle_heredoc(char *delimiter, t_env *env, t_node *ast,
+				t_cmd *cmd);
 void		ft_free_split(char **ptr);
 t_cmd		*init_cmd(t_node *ast);
 char		*find_path(char *cmd, t_env *env);

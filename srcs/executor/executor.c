@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:55 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/12 20:47:47 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/13 17:05:20 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,9 +52,8 @@ int	exec_group(t_node *ast, t_env **env)
 		return (perror("fork"), 1);
 	if (pid == 0)
 	{
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_DFL);
-		if (ast->redir_list && handle_redir(ast->redir_list) != 0)
+		setup_signals_exec();
+		if (ast->redir_list && handle_redir(*env, ast, NULL) != 0)
 			exit(1);
 		status = execute(ast->left, env);
 		exit(status);

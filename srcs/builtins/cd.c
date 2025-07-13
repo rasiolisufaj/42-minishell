@@ -6,78 +6,89 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 17:42:16 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/12 20:56:46 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/13 21:15:30 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 #include "../../includes/minishell_structs.h"
-#include <sys/stat.h>
 
-static void	check_current_directory(char *path)
+void	if_relative_path(char *path)
 {
 	char	*cwd;
 
 	if (path[0] != '/')
 	{
 		cwd = getcwd(NULL, 0);
-		if (cwd == NULL)
-		{
-			ft_putstr_fd("cd: error retrieving current directory: ", 2);
-			perror("getcwd");
-		}
+		if (!cwd)
+			perror("cd: error retrieving current directory: "
+				"getcwd: cannot access parent directories");
 		else
 			free(cwd);
 	}
 }
 
-static bool	validate_path_exists(char *path)
+char	*get_oldpwd_char(t_env *env)
 {
-	struct stat	statbuf;
+	char	*oldpwd;
+	char	*pwd_env;
 
-	if (stat(path, &statbuf) != 0)
+	oldpwd = getcwd(NULL, 0);
+	if (!oldpwd)
 	{
-		ft_putstr_fd("minishell: cd: ", 2);
-		write(2, path, ft_strlen(path));
-		write(2, ": No such file or directory\n", 28);
-		return (false);
+		pwd_env = get_env_value(env, "PWD");
+		if (pwd_env == NULL)
+			oldpwd = ft_strdup("");
+		else
+			oldpwd = ft_strdup(pwd_env);
+		if (!oldpwd)
+			return (perror("malloc failed"), NULL);
 	}
-	if (!S_ISDIR(statbuf.st_mode))
-	{
-		ft_putstr_fd("minishell: cd: ", 2);
-		write(2, path, ft_strlen(path));
-		write(2, ": Not a directory\n", 18);
-		return (false);
-	}
-	return (true);
+	return (oldpwd);
 }
 
-static bool	change_to_directory(char *path)
+char	*get_newpwd_char(char *oldpwd, char *path)
 {
-	if (chdir(path) != 0)
+	char	*newpwd;
+	char	*tmp;
+
+	newpwd = getcwd(NULL, 0);
+	if (!newpwd)
 	{
-		ft_putstr_fd("minishell: cd: ", 2);
-		write(2, path, ft_strlen(path));
-		write(2, ": Permission denied\n", 20);
-		return (false);
+		tmp = ft_strjoin(oldpwd, "/");
+		if (!tmp)
+			return (perror("malloc failed"), NULL);
+		newpwd = ft_strjoin(tmp, path);
+		free(tmp);
+		if (!newpwd)
+			return (perror("malloc failed"), NULL);
 	}
-	return (true);
+	return (newpwd);
 }
 
-static bool	cd_change_directory(char *path)
+static bool	cd_change_directory(char *path, t_env *env)
 {
-	check_current_directory(path);
-	if (!validate_path_exists(path))
+	char	*oldpwd;
+	char	*newpwd;
+
+	if_relative_path(path);
+	oldpwd = get_oldpwd_char(env);
+	if (!oldpwd)
 		return (false);
-	if (!change_to_directory(path))
-		return (false);
-	return (true);
+	if (!validate_path_exists(path) || !change_to_directory(path))
+		return (free(oldpwd), false);
+	set_env_value(&env, "OLDPWD", oldpwd);
+	newpwd = get_newpwd_char(oldpwd, path);
+	if (!newpwd)
+		return (free(oldpwd), false);
+	set_env_value(&env, "PWD", newpwd);
+	return (free(oldpwd), free(newpwd), true);
 }
 
 int	cd_exec(t_cmd *cmd, t_env *env)
 {
-	char	*home;
 	char	*targ;
+	char	*home;
 
 	if (cmd->ac > 2)
 		return (ft_putendl_fd("minishell: cd: too many arguments", 2),
@@ -92,7 +103,7 @@ int	cd_exec(t_cmd *cmd, t_env *env)
 	}
 	else
 		targ = cmd->args[1];
-	if (!cd_change_directory(targ))
+	if (!cd_change_directory(targ, env))
 		return (EXIT_FAILURE);
 	return (EXIT_SUCCESS);
 }

@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 18:08:07 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/11 22:47:57 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/13 14:06:16 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ int	exec_cmd(t_node *ast, t_env **env)
 		return (1);
 	saved_in = dup(STDIN_FILENO);
 	saved_out = dup(STDOUT_FILENO);
-	if (handle_redir(ast->redir_list) != 0)
+	if (handle_redir(*env, ast, cmd) != 0)
 		return (close_files(saved_in, saved_out), free_cmd(cmd), 1);
 	if (!cmd->args || !cmd->args[0])
 		return (close_files(saved_in, saved_out), free_cmd(cmd), 0);
