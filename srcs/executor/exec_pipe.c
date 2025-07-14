@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_pipe.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:55 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/14 01:09:31 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/14 17:12:45 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ static int	create_pipe(int pipefd[2])
 static pid_t	spawn_left_child(t_node *ast, t_env **env, int pipefd[2])
 {
 	pid_t	pid;
+	int		status;
 
 	pid = fork();
 	if (pid < 0)
@@ -36,7 +37,9 @@ static pid_t	spawn_left_child(t_node *ast, t_env **env, int pipefd[2])
 		close(pipefd[1]);
 		if (ast->left->redir_list && handle_redir(*env, ast, NULL) != 0)
 			exit(1);
-		exit(execute(ast->left, env));
+		status = execute(ast->left, env);
+		cleanup_shell(ast, *env);
+		exit(status);
 	}
 	return (pid);
 }
@@ -44,6 +47,7 @@ static pid_t	spawn_left_child(t_node *ast, t_env **env, int pipefd[2])
 static pid_t	spawn_right_child(t_node *ast, t_env **env, int pipefd[2])
 {
 	pid_t	pid;
+	int		status;
 
 	pid = fork();
 	if (pid < 0)
@@ -57,7 +61,9 @@ static pid_t	spawn_right_child(t_node *ast, t_env **env, int pipefd[2])
 		close(pipefd[0]);
 		if (ast->right->redir_list && handle_redir(*env, ast, NULL) != 0)
 			exit(1);
-		exit(execute(ast->right, env));
+		status = execute(ast->right, env);
+		cleanup_shell(ast, *env);
+		exit(status);
 	}
 	return (pid);
 }
