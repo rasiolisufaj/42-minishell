@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 18:08:07 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/13 14:06:16 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/15 21:00:02 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,47 +32,46 @@ void	free_cmd(t_cmd *cmd)
 	free(cmd);
 }
 
-void	close_files(int saved_in, int saved_out)
+void	close_files(t_heredoc_args *args)
 {
-	dup2(saved_in, STDIN_FILENO);
-	close(saved_in);
-	dup2(saved_out, STDOUT_FILENO);
-	close(saved_out);
+	dup2(args->saved_in, STDIN_FILENO);
+	close(args->saved_in);
+	dup2(args->saved_out, STDOUT_FILENO);
+	close(args->saved_out);
 }
 
-void	empty_cmd(t_cmd *cmd, int saved_in, int saved_out)
+void	empty_cmd(t_heredoc_args *args)
 {
 	ft_putstr_fd("minishell: ", 2);
 	ft_putendl_fd(": command not found", 2);
-	close_files(saved_in, saved_out);
-	free_cmd(cmd);
+	close_files(args);
+	free_cmd(args->cmd);
 }
 
 int	exec_cmd(t_node *ast, t_env **env)
 {
-	t_cmd	*cmd;
-	int		status;
-	int		saved_in;
-	int		saved_out;
+	int				status;
+	t_heredoc_args	args;
 
 	if (ast == NULL || ast->type != N_CMD)
 		return (1);
-	cmd = init_cmd(ast);
-	if (!cmd)
+	args.cmd = init_cmd(ast);
+	if (!args.cmd)
 		return (1);
-	saved_in = dup(STDIN_FILENO);
-	saved_out = dup(STDOUT_FILENO);
-	if (handle_redir(*env, ast, cmd) != 0)
-		return (close_files(saved_in, saved_out), free_cmd(cmd), 1);
-	if (!cmd->args || !cmd->args[0])
-		return (close_files(saved_in, saved_out), free_cmd(cmd), 0);
-	if (cmd->args[0][0] == '\0')
-		return (empty_cmd(cmd, saved_in, saved_out), 127);
-	if (is_builtin(cmd))
-		status = exec_builtin(cmd, env);
+	args.delimiter = NULL;
+	args.saved_in = dup(STDIN_FILENO);
+	args.saved_out = dup(STDOUT_FILENO);
+	if (handle_redir(*env, ast, &args) != 0)
+		return (close_files(&args), free_cmd(args.cmd), 1);
+	if (!args.cmd->args || !args.cmd->args[0])
+		return (close_files(&args), free_cmd(args.cmd), 0);
+	if (args.cmd->args[0][0] == '\0')
+		return (empty_cmd(&args), 127);
+	if (is_builtin(args.cmd))
+		status = exec_builtin(args.cmd, env);
 	else
-		status = exec_external(cmd, *env);
-	close_files(saved_in, saved_out);
-	free_cmd(cmd);
+		status = exec_external(args.cmd, *env);
+	close_files(&args);
+	free_cmd(args.cmd);
 	return (status);
 }

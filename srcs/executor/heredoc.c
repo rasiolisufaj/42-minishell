@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 19:07:56 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/13 23:25:26 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/15 21:05:30 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,10 @@ static bool	child_readline(char *stop, int pipe_fd[2])
 void	heredoc_child(int pipe_fd[2], t_env *env, t_node *ast,
 		t_heredoc_args *args)
 {
-	char	*stop;
+	char		*stop;
 
+	close(args->saved_in);
+	close(args->saved_out);
 	stop = ft_strdup(args->delimiter);
 	if (!stop)
 	{
@@ -82,25 +84,22 @@ void	sig_heredoc(int status, int *sig)
 		ft_putstr_fd("\n", 2);
 }
 
-int	handle_heredoc(char *delimiter, t_env *env, t_node *ast, t_cmd *cmd)
+int	handle_heredoc(t_env *env, t_node *ast, t_heredoc_args *args)
 {
 	int				pipe_fd[2];
 	int				status;
 	int				sig;
 	pid_t			pid;
-	t_heredoc_args	args;
 
 	if (pipe(pipe_fd) < 0)
 		return (perror("minishell: pipe"), 1);
-	args.cmd = cmd;
-	args.delimiter = delimiter;
 	signal(SIGINT, SIG_IGN);
 	pid = fork();
 	if (pid < 0)
 		return (perror("minishell: fork"), signal(SIGINT, sigint_handler),
 			close(pipe_fd[0]), close(pipe_fd[1]), 1);
 	if (pid == 0)
-		heredoc_child(pipe_fd, env, ast, &args);
+		heredoc_child(pipe_fd, env, ast, args);
 	close(pipe_fd[1]);
 	waitpid(pid, &status, 0);
 	signal(SIGINT, sigint_handler);

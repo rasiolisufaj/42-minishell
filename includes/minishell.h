@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/13 23:34:52 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/15 20:59:12 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,20 +182,20 @@ void		setup_signals_waiting(void);
 int			echo_exec(t_cmd *cmd);
 int			unset_exec(t_cmd *cmd, t_env **env);
 int			env_exec(t_env *env);
-int			handle_redir(t_env *env, t_node *ast, t_cmd *cmd);
+int			handle_redir(t_env *env, t_node *ast, t_heredoc_args *args);
 int			is_builtin(t_cmd *cmd);
 int			exec_builtin(t_cmd *cmd, t_env **env);
 int			exec_external(t_cmd *cmd, t_env *env);
-int			handle_heredoc(char *delimiter, t_env *env, t_node *ast,
-				t_cmd *cmd);
+int			handle_heredoc(t_env *env, t_node *ast,
+				t_heredoc_args *args);
 void		ft_free_split(char **ptr);
 t_cmd		*init_cmd(t_node *ast);
 char		*find_path(char *cmd, t_env *env);
 char		**env_to_envp(t_env *env);
 void		heredoc_child(int pipe_fd[2], t_env *env, t_node *ast,
 				t_heredoc_args *args);
-int			handle_mult_heredoc(char *delimiter, t_env *env, t_node *ast,
-				t_cmd *cmd);
+int			handle_mult_heredoc(t_env *env, t_node *ast,
+				t_heredoc_args *args);
 int			count_heredocs(t_token *redir_list);
 void		sig_heredoc(int status, int *sig);
 

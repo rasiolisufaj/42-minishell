@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 19:05:19 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/14 00:24:25 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/15 21:13:49 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,25 +86,28 @@ static t_token	*find_last_heredoc(t_token *redir_list)
 }
 
 static bool	heredoc_redir(t_token *current, t_env *env, t_node *ast,
-		t_cmd *cmd)
+		t_heredoc_args *args)
 {
 	t_token	*last_heredoc;
 
 	last_heredoc = find_last_heredoc(ast->redir_list);
 	if (current->type == T_HEREDOC)
 	{
+		if (!current->next)
+			return (false);
+		args->delimiter = current->next->value;
 		if (current == last_heredoc)
 		{
-			if (handle_heredoc(current->next->value, env, ast, cmd) != 0)
+			if (handle_heredoc(env, ast, args) != 0)
 				return (false);
 		}
 		else
-			handle_mult_heredoc(current->next->value, env, ast, cmd);
+			handle_mult_heredoc(env, ast, args);
 	}
 	return (true);
 }
 
-int	handle_redir(t_env *env, t_node *ast, t_cmd *cmd)
+int	handle_redir(t_env *env, t_node *ast, t_heredoc_args *args)
 {
 	t_token			*current;
 	int				fd;
@@ -122,7 +125,7 @@ int	handle_redir(t_env *env, t_node *ast, t_cmd *cmd)
 			if (redir_opening(&fd, current) != 0)
 				return (1);
 		}
-		if (!heredoc_redir(current, env, ast, cmd))
+		if (!heredoc_redir(current, env, ast, args))
 			return (1);
 		current = current->next;
 	}

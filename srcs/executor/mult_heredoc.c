@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 22:27:58 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/13 23:35:37 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/15 21:05:36 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,25 +40,22 @@ void	read_pipe(int pipe_fd[2])
 	close(pipe_fd[0]);
 }
 
-int	handle_mult_heredoc(char *delimiter, t_env *env, t_node *ast, t_cmd *cmd)
+int	handle_mult_heredoc(t_env *env, t_node *ast, t_heredoc_args *args)
 {
 	int				pipe_fd[2];
 	int				status;
 	int				sig;
 	pid_t			pid;
-	t_heredoc_args	args;
 
 	if (pipe(pipe_fd) < 0)
 		return (perror("minishell: pipe"), 1);
-	args.cmd = cmd;
-	args.delimiter = delimiter;
 	signal(SIGINT, SIG_IGN);
 	pid = fork();
 	if (pid < 0)
 		return (perror("minishell: fork"), signal(SIGINT, sigint_handler),
 			close(pipe_fd[0]), close(pipe_fd[1]), 1);
 	if (pid == 0)
-		heredoc_child(pipe_fd, env, ast, &args);
+		heredoc_child(pipe_fd, env, ast, args);
 	close(pipe_fd[1]);
 	waitpid(pid, &status, 0);
 	signal(SIGINT, sigint_handler);
