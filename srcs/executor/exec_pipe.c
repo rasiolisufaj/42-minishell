@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:55 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/14 17:12:45 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/16 17:14:25 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,8 @@ int	exec_pipe(t_node *ast, t_env **env)
 	pid_t	left_pid;
 	pid_t	right_pid;
 
+	if (process_heredocs(ast, *env) != 0)
+		return (1);
 	if (create_pipe(pipefd) != 0)
 		return (1);
 	left_pid = spawn_left_child(ast, env, pipefd);

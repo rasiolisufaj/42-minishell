@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 19:07:56 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/15 21:05:30 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/16 17:23:35 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,13 @@ static bool	child_readline(char *stop, int pipe_fd[2])
 	char	*line;
 
 	line = readline("> ");
-	if (!line || ft_strcmp(line, stop) == 0)
+	if (!line)
+		return (FALSE);
+	if (ft_strncmp(line, stop, ft_strlen(stop)) == 0
+		&& ft_strlen(line) == ft_strlen(stop))
 	{
-		if (line)
-			free(line);
+		free(line);
+		close(pipe_fd[1]);
 		return (FALSE);
 	}
 	write(pipe_fd[1], line, ft_strlen(line));
@@ -52,7 +55,7 @@ static bool	child_readline(char *stop, int pipe_fd[2])
 void	heredoc_child(int pipe_fd[2], t_env *env, t_node *ast,
 		t_heredoc_args *args)
 {
-	char		*stop;
+	char	*stop;
 
 	close(args->saved_in);
 	close(args->saved_out);
@@ -77,19 +80,41 @@ void	heredoc_child(int pipe_fd[2], t_env *env, t_node *ast,
 	exit(0);
 }
 
-void	sig_heredoc(int status, int *sig)
+int	process_heredocs(t_node *ast, t_env *env)
 {
-	*sig = WTERMSIG(status);
-	if (*sig == SIGINT)
-		ft_putstr_fd("\n", 2);
+	t_token			*redir;
+	t_heredoc_args	args;
+
+	if (ast->type == N_PIPE)
+	{
+		if (process_heredocs(ast->left, env) != 0)
+			return (1);
+		if (process_heredocs(ast->right, env) != 0)
+			return (1);
+	}
+	redir = ast->redir_list;
+	while (redir)
+	{
+		if (redir->type == T_HEREDOC)
+		{
+			args.delimiter = redir->next->value;
+			args.saved_in = dup(STDIN_FILENO);
+			args.saved_out = dup(STDOUT_FILENO);
+			args.cmd = NULL;
+			if (heredoc_redir(redir, env, ast, &args) == false)
+				return (1);
+		}
+		redir = redir->next;
+	}
+	return (0);
 }
 
 int	handle_heredoc(t_env *env, t_node *ast, t_heredoc_args *args)
 {
-	int				pipe_fd[2];
-	int				status;
-	int				sig;
-	pid_t			pid;
+	int		pipe_fd[2];
+	int		status;
+	int		sig;
+	pid_t	pid;
 
 	if (pipe(pipe_fd) < 0)
 		return (perror("minishell: pipe"), 1);

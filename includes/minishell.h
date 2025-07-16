@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/15 20:59:12 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/16 17:14:10 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,8 +119,8 @@ int			handle_star_pattern(char **p, char **n, char **star_p,
 int			match_patt(char *pattern, char *name);
 int			should_include_entry(char *pattern, struct dirent *entry);
 bool		should_expand_wildcard(t_token *token);
-int			process_directory_entries(char *str, t_token **head,
-				t_token **tail, DIR *dir);
+int			process_directory_entries(char *str, t_token **head, t_token **tail,
+				DIR *dir);
 t_token		*handle_simple_wildcard(char *pattern, char *dir_path);
 t_token		*handle_star_slash_pattern(char *pattern);
 t_token		*handle_joker(char *str);
@@ -186,17 +186,20 @@ int			handle_redir(t_env *env, t_node *ast, t_heredoc_args *args);
 int			is_builtin(t_cmd *cmd);
 int			exec_builtin(t_cmd *cmd, t_env **env);
 int			exec_external(t_cmd *cmd, t_env *env);
-int			handle_heredoc(t_env *env, t_node *ast,
-				t_heredoc_args *args);
+int			handle_heredoc(t_env *env, t_node *ast, t_heredoc_args *args);
 void		ft_free_split(char **ptr);
 t_cmd		*init_cmd(t_node *ast);
 char		*find_path(char *cmd, t_env *env);
 char		**env_to_envp(t_env *env);
 void		heredoc_child(int pipe_fd[2], t_env *env, t_node *ast,
 				t_heredoc_args *args);
-int			handle_mult_heredoc(t_env *env, t_node *ast,
-				t_heredoc_args *args);
+int			handle_mult_heredoc(t_env *env, t_node *ast, t_heredoc_args *args);
 int			count_heredocs(t_token *redir_list);
 void		sig_heredoc(int status, int *sig);
+bool		heredoc_redir(t_token *current, t_env *env, t_node *ast,
+				t_heredoc_args *args);
+t_token		*find_last_heredoc(t_token *redir_list);
+void		close_files(t_heredoc_args *args);
+int			process_heredocs(t_node *ast, t_env *env);
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirections.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 19:05:19 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/15 21:13:49 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/16 16:21:10 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ int	redir_opening(int *fd, t_token *current)
 	return (close(*fd), 0);
 }
 
-static t_token	*find_last_heredoc(t_token *redir_list)
+t_token	*find_last_heredoc(t_token *redir_list)
 {
 	t_token	*last;
 	t_token	*current;
@@ -85,7 +85,7 @@ static t_token	*find_last_heredoc(t_token *redir_list)
 	return (last);
 }
 
-static bool	heredoc_redir(t_token *current, t_env *env, t_node *ast,
+bool	heredoc_redir(t_token *current, t_env *env, t_node *ast,
 		t_heredoc_args *args)
 {
 	t_token	*last_heredoc;
