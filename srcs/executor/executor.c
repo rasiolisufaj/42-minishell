@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:55 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/13 21:33:03 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/16 19:29:12 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,28 @@ int	exec_or(t_node *ast, t_env **env)
 	return (status);
 }
 
+static void	group_child(t_node *ast, t_env **env)
+{
+	int	status;
+
+	if (ast->redir_list && handle_redir(*env, ast, NULL) != 0)
+	{
+		cleanup_shell(ast, *env);
+		exit(1);
+	}
+	setup_signals_exec();
+	if (ast->left)
+	{
+		status = execute(ast->left, env);
+		cleanup_shell(ast, *env);
+		exit(status);
+	}
+	cleanup_shell(ast, *env);
+	exit(0);
+}
+
 int	exec_group(t_node *ast, t_env **env)
 {
-	int		status;
 	int		wstatus;
 	pid_t	pid;
 
@@ -43,13 +62,7 @@ int	exec_group(t_node *ast, t_env **env)
 	if (pid < 0)
 		return (perror("fork"), 1);
 	if (pid == 0)
-	{
-		setup_signals_exec();
-		if (ast->redir_list && handle_redir(*env, ast, NULL) != 0)
-			exit(1);
-		status = execute(ast->left, env);
-		exit(status);
-	}
+		group_child(ast, env);
 	waitpid(pid, &wstatus, 0);
 	if (WIFEXITED(wstatus))
 		return (WEXITSTATUS(wstatus));
