@@ -6,22 +6,25 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 18:12:12 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/12 17:06:09 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/17 23:05:06 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 #include "../../includes/minishell_structs.h"
 
-void	child_external(char *path_cmd, char **envp, t_cmd *cmd)
+void	child_external(char *path_cmd, char **envp, t_heredoc_args *args)
 {
 	setup_signals_exec();
-	if (execve(path_cmd, cmd->args, envp) == -1)
+	close(args->saved_in);
+	close(args->saved_out);
+	if (execve(path_cmd, args->cmd->args, envp) == -1)
 	{
 		ft_putstr_fd("minishell: execve failed: ", 2);
-		ft_putendl_fd(cmd->args[0], 2);
+		ft_putendl_fd(args->cmd->args[0], 2);
 		free(path_cmd);
 		ft_free_split(envp);
+		free_cmd(args->cmd);
 		exit(127);
 	}
 }
@@ -64,17 +67,17 @@ void	wrong_path_cmd(char *cmd)
 	}
 }
 
-int	exec_external(t_cmd *cmd, t_env *env)
+int	exec_external(t_heredoc_args *args, t_env *env)
 {
 	char	*path_cmd;
 	char	**envp;
 	pid_t	pid;
 
-	if (!cmd || !cmd->args || !cmd->args[0] || !env)
+	if (!args || !args->cmd || !args->cmd->args || !args->cmd->args[0] || !env)
 		return (1);
-	path_cmd = find_path(cmd->args[0], env);
+	path_cmd = find_path(args->cmd->args[0], env);
 	if (!path_cmd)
-		return (wrong_path_cmd(cmd->args[0]), 127);
+		return (wrong_path_cmd(args->cmd->args[0]), 127);
 	if (path_cmd == (char *)126)
 		return (126);
 	envp = env_to_envp(env);
@@ -87,7 +90,7 @@ int	exec_external(t_cmd *cmd, t_env *env)
 			ft_putendl_fd("minishell: fork failed", 2), 1);
 	else if (pid == 0)
 	{
-		child_external(path_cmd, envp, cmd);
+		child_external(path_cmd, envp, args);
 		exit(127);
 	}
 	return (parent_external(pid, path_cmd, envp));

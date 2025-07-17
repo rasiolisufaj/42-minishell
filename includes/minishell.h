@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
+/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/17 17:07:11 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/17 23:03:44 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,6 +171,7 @@ char		*ft_strndup(const char *src, size_t n);
 void		parser_error(char *msg);
 void		append_token(t_token **head, t_token **tail, t_token *src);
 bool		is_redirection(t_token_type type);
+void		free_cmd(t_cmd *cmd);
 
 // SIGNALS
 void		setup_signals(void);
@@ -184,7 +185,7 @@ int			env_exec(t_env *env);
 int			echo_exec(t_cmd *cmd);
 int			is_builtin(t_cmd *cmd);
 int			unset_exec(t_cmd *cmd, t_env **env);
-int			exec_external(t_cmd *cmd, t_env *env);
+int			exec_external(t_heredoc_args *args, t_env *env);
 int			exec_builtin(t_cmd *cmd, t_env **env);
 int			process_heredocs(t_node *ast, t_env *env);
 int			count_heredocs(t_token *redir_list);

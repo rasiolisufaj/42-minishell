@@ -6,7 +6,7 @@
 /*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 18:08:07 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/15 21:00:02 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/17 23:00:09 by itaharbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ int	exec_cmd(t_node *ast, t_env **env)
 	if (is_builtin(args.cmd))
 		status = exec_builtin(args.cmd, env);
 	else
-		status = exec_external(args.cmd, *env);
+		status = exec_external(&args, *env);
 	close_files(&args);
 	free_cmd(args.cmd);
 	return (status);
