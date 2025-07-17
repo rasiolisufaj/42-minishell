@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:55 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/17 13:59:43 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/17 14:29:24 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,17 +33,16 @@ static pid_t	spawn_left_child(t_node *ast, t_env **env, int pipefd[2],
 	{
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
+		close(saved_stdin);
 		close(pipefd[0]);
 		dup2(pipefd[1], STDOUT_FILENO);
 		close(pipefd[1]);
 		if (ast->left->redir_list && handle_redir(*env, ast, NULL) != 0)
 		{
-			close(saved_stdin);
 			cleanup_shell(ast, *env);
 			exit(1);
 		}
 		status = execute(ast->left, env);
-		close(saved_stdin);
 		cleanup_shell(ast, *env);
 		exit(status);
 	}
@@ -63,17 +62,16 @@ static pid_t	spawn_right_child(t_node *ast, t_env **env, int pipefd[2],
 	{
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
+		close(saved_stdin);
 		close(pipefd[1]);
 		dup2(pipefd[0], STDIN_FILENO);
 		close(pipefd[0]);
 		if (ast->right->redir_list && handle_redir(*env, ast, NULL) != 0)
 		{
-			close(saved_stdin);
 			cleanup_shell(ast, *env);
 			exit(1);
 		}
 		status = execute(ast->right, env);
-		close(saved_stdin);
 		cleanup_shell(ast, *env);
 		exit(status);
 	}
