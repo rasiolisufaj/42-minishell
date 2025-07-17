@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 19:07:56 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/16 17:23:35 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/17 17:07:22 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,12 +97,11 @@ int	process_heredocs(t_node *ast, t_env *env)
 	{
 		if (redir->type == T_HEREDOC)
 		{
-			args.delimiter = redir->next->value;
-			args.saved_in = dup(STDIN_FILENO);
-			args.saved_out = dup(STDOUT_FILENO);
-			args.cmd = NULL;
+			arg_helpers(&args, redir);
 			if (heredoc_redir(redir, env, ast, &args) == false)
-				return (1);
+				return (close(args.saved_in), close(args.saved_out), 1);
+			close(args.saved_in);
+			close(args.saved_out);
 		}
 		redir = redir->next;
 	}

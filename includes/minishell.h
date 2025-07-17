@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 11:37:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/17 11:13:02 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/17 17:07:11 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,6 +198,7 @@ void		heredoc_child(int pipe_fd[2], t_env *env, t_node *ast,
 				t_heredoc_args *args);
 void		sig_heredoc(int status, int *sig);
 void		close_files(t_heredoc_args *args);
+void		arg_helpers(t_heredoc_args *args, t_token *redir);
 t_cmd		*init_cmd(t_node *ast);
 t_token		*find_last_heredoc(t_token *redir_list);
 bool		heredoc_redir(t_token *current, t_env *env, t_node *ast,
