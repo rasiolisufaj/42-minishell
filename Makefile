@@ -6,12 +6,12 @@
 #    By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/16 15:30:49 by raisufaj          #+#    #+#              #
-#    Updated: 2025/07/16 17:15:26 by raisufaj         ###   ########.fr        #
+#    Updated: 2025/07/17 11:19:45 by raisufaj         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # Compiler & Flags
-CC      := gcc
+CC      := cc
 CFLAGS  := -Wall -Wextra -Werror -g
 
 # Project Name

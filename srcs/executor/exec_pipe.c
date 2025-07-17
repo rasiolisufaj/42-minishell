@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_pipe.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:24:55 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/16 18:23:27 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/17 13:59:43 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ static int	create_pipe(int pipefd[2])
 	return (0);
 }
 
-static pid_t	spawn_left_child(t_node *ast, t_env **env, int pipefd[2])
+static pid_t	spawn_left_child(t_node *ast, t_env **env, int pipefd[2],
+		int saved_stdin)
 {
 	pid_t	pid;
 	int		status;
@@ -37,17 +38,20 @@ static pid_t	spawn_left_child(t_node *ast, t_env **env, int pipefd[2])
 		close(pipefd[1]);
 		if (ast->left->redir_list && handle_redir(*env, ast, NULL) != 0)
 		{
+			close(saved_stdin);
 			cleanup_shell(ast, *env);
 			exit(1);
 		}
 		status = execute(ast->left, env);
+		close(saved_stdin);
 		cleanup_shell(ast, *env);
 		exit(status);
 	}
 	return (pid);
 }
 
-static pid_t	spawn_right_child(t_node *ast, t_env **env, int pipefd[2])
+static pid_t	spawn_right_child(t_node *ast, t_env **env, int pipefd[2],
+		int saved_stdin)
 {
 	pid_t	pid;
 	int		status;
@@ -64,10 +68,12 @@ static pid_t	spawn_right_child(t_node *ast, t_env **env, int pipefd[2])
 		close(pipefd[0]);
 		if (ast->right->redir_list && handle_redir(*env, ast, NULL) != 0)
 		{
+			close(saved_stdin);
 			cleanup_shell(ast, *env);
 			exit(1);
 		}
 		status = execute(ast->right, env);
+		close(saved_stdin);
 		cleanup_shell(ast, *env);
 		exit(status);
 	}
@@ -102,14 +108,16 @@ int	exec_pipe(t_node *ast, t_env **env)
 	int		status;
 
 	saved_stdin = dup(STDIN_FILENO);
+	if (saved_stdin < 0)
+		return (1);
 	if (process_heredocs(ast, *env) != 0)
 		return (close(saved_stdin), 1);
 	if (create_pipe(pipefd) != 0)
 		return (close(saved_stdin), 1);
-	left_pid = spawn_left_child(ast, env, pipefd);
+	left_pid = spawn_left_child(ast, env, pipefd, saved_stdin);
 	if (left_pid < 0)
 		return (close(saved_stdin), 1);
-	right_pid = spawn_right_child(ast, env, pipefd);
+	right_pid = spawn_right_child(ast, env, pipefd, saved_stdin);
 	if (right_pid < 0)
 		return (close(saved_stdin), 1);
 	close(pipefd[0]);
