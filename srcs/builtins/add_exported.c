@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 14:30:58 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/11 14:47:40 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/17 15:18:30 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,11 @@ static int	extract_key_value(char *arg, char **key, char **value)
 
 static int	update_existing_env(t_env *exist, char *key, char *value)
 {
-	free(exist->value);
-	exist->value = value;
+	if (value)
+	{
+		free(exist->value);
+		exist->value = value;
+	}
 	exist->exported = true;
 	free(key);
 	return (EXIT_SUCCESS);

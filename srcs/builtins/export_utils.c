@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 15:11:18 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/11 15:12:17 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/17 15:18:59 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ size_t	count_values(t_env *env)
 	current = env;
 	while (current)
 	{
-		if (current->exported)
+		if (current->exported && current->key)
 			count++;
 		current = current->next;
 	}

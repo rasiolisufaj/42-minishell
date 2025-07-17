@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_to_envp.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itaharbo <itaharbo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 22:52:19 by itaharbo          #+#    #+#             */
-/*   Updated: 2025/07/11 22:53:09 by itaharbo         ###   ########.fr       */
+/*   Updated: 2025/07/17 15:19:34 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	count_env_nodes(t_env *env)
 	count = 0;
 	while (env)
 	{
-		if (env->exported)
+		if (env->exported && env->value)
 			count++;
 		env = env->next;
 	}
@@ -72,7 +72,7 @@ char	**env_to_envp(t_env *env)
 	i = 0;
 	while (current && i < count)
 	{
-		if (current->exported)
+		if (current->exported && current->value)
 		{
 			envp[i] = create_env_entry(current);
 			if (!envp[i])
