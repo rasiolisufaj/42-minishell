@@ -6,7 +6,7 @@
 /*   By: raisufaj <raisufaj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 14:30:58 by raisufaj          #+#    #+#             */
-/*   Updated: 2025/07/17 15:18:30 by raisufaj         ###   ########.fr       */
+/*   Updated: 2025/07/17 15:25:53 by raisufaj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ static int	extract_key_value(char *arg, char **key, char **value)
 	char	*eq_sign;
 	size_t	len;
 
+	*value = NULL;
 	eq_sign = ft_strchr(arg, '=');
 	if (!eq_sign)
 		len = ft_strlen(arg);
