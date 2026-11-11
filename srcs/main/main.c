@@ -15,13 +15,6 @@
 
 int	g_signal;
 
-static int	get_main_exit_status(void)
-{
-	if (g_signal >= 255)
-		return ((g_signal >> 8) & 0xFF);
-	return (g_signal & 0xFF);
-}
-
 int	check_args(int argc, char **argv)
 {
 	if (argc != 1)
@@ -30,23 +23,40 @@ int	check_args(int argc, char **argv)
 	return (0);
 }
 
-int	process_command_line(t_node **ast, t_env *env)
+// Heredocs are read before expansion so the delimiter stays literal.
+// Words are expanded later, in exec_cmd, right before each command runs.
+static int	prepare_line(t_shell *sh)
+{
+	int	ret;
+
+	ret = read_heredocs(sh->ast, sh);
+	if (ret == 0)
+		return (2);
+	sh->last_status = ret;
+	unlink_heredocs(sh->ast);
+	return (1);
+}
+
+int	process_command_line(t_shell *sh)
 {
 	char	*line;
 
-	free_node(*ast);
-	*ast = NULL;
+	free_node(sh->ast);
+	sh->ast = NULL;
+	g_signal = 0;
 	line = get_prompt();
+	if (g_signal == SIGINT)
+		sh->last_status = 130;
 	if (!line)
 		return (0);
-	*ast = parser(line, env, g_signal);
+	sh->ast = parser(line);
 	free(line);
-	if (!*ast)
+	if (!sh->ast)
 	{
-		g_signal = 2;
+		sh->last_status = 2;
 		return (1);
 	}
-	return (2);
+	return (prepare_line(sh));
 }
 
 void	cleanup_shell(t_node *ast, t_env *env)
@@ -58,26 +68,29 @@ void	cleanup_shell(t_node *ast, t_env *env)
 
 int	main(int argc, char **argv, char **envp)
 {
-	t_node	*ast;
-	t_env	*env;
-	int		status;
+	t_shell	sh;
+	int		ret;
 
 	if (check_args(argc, argv))
 		return (1);
-	init_shell(&env, &ast, envp);
-	if (!env)
-		return (1);
+	init_shell(&sh, envp);
 	while (1)
 	{
-		status = process_command_line(&ast, env);
-		if (status == 0)
+		ret = process_command_line(&sh);
+		if (ret == 0)
 			break ;
-		if (status == 1)
+		if (ret == 1)
 			continue ;
-		g_signal = execute(ast, &env);
-		if (g_signal >= 255)
+		setup_signals_waiting();
+		sh.last_status = execute(sh.ast, &sh);
+		setup_signals();
+		unlink_heredocs(sh.ast);
+		if (sh.last_status >= EXIT_FLAG)
+		{
+			ft_putendl_fd("exit", 1);
 			break ;
+		}
 	}
-	cleanup_shell(ast, env);
-	return (get_main_exit_status());
+	cleanup_shell(sh.ast, sh.env);
+	return (sh.last_status & 0xFF);
 }

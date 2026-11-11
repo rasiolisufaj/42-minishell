@@ -84,6 +84,7 @@ t_token	*handle_star_slash_pattern(char *pattern)
 		}
 		current = current->next;
 	}
+	free_tokens(dirs);
 	sort_token(head);
 	return (head);
 }

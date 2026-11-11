@@ -40,6 +40,8 @@ int	redir_error(t_token *redir_list)
 	return (0);
 }
 
+// A heredoc was already read into a temp file (read_heredocs), so `<<`
+// opens that file exactly like `<`.
 int	redir_opening(int *fd, t_token *current)
 {
 	if (current->type == T_REDIR_OUT)
@@ -58,7 +60,7 @@ int	redir_opening(int *fd, t_token *current)
 		if (dup2(*fd, STDOUT_FILENO) < 0)
 			return (perror("minishell: dup2"), close(*fd), 1);
 	}
-	else if (current->type == T_REDIR_IN)
+	else if (current->type == T_REDIR_IN || current->type == T_HEREDOC)
 	{
 		*fd = open(current->next->value, O_RDONLY);
 		if (*fd < 0)
@@ -69,63 +71,18 @@ int	redir_opening(int *fd, t_token *current)
 	return (close(*fd), 0);
 }
 
-t_token	*find_last_heredoc(t_token *redir_list)
+int	handle_redir(t_token *redir_list)
 {
-	t_token	*last;
 	t_token	*current;
+	int		fd;
 
-	last = NULL;
+	if (redir_error(redir_list))
+		return (1);
 	current = redir_list;
 	while (current)
 	{
-		if (current->type == T_HEREDOC)
-			last = current;
-		current = current->next;
-	}
-	return (last);
-}
-
-bool	heredoc_redir(t_token *current, t_env *env, t_node *ast,
-		t_heredoc_args *args)
-{
-	t_token	*last_heredoc;
-
-	last_heredoc = find_last_heredoc(ast->redir_list);
-	if (current->type == T_HEREDOC)
-	{
-		if (!current->next)
-			return (false);
-		args->delimiter = current->next->value;
-		if (current == last_heredoc)
-		{
-			if (handle_heredoc(env, ast, args) != 0)
-				return (false);
-		}
-		else
-			handle_mult_heredoc(env, ast, args);
-	}
-	return (true);
-}
-
-int	handle_redir(t_env *env, t_node *ast, t_heredoc_args *args)
-{
-	t_token			*current;
-	int				fd;
-
-	if (!ast->redir_list)
-		return (0);
-	if (redir_error(ast->redir_list))
-		return (1);
-	current = ast->redir_list;
-	while (current)
-	{
-		if (current->type == T_REDIR_OUT || current->type == T_REDIR_APPEND
-			|| current->type == T_REDIR_IN)
-		{
-			if (redir_opening(&fd, current) != 0)
-				return (1);
-		}
-		if (!heredoc_redir(current, env, ast, args))
+		if (is_redirection(current->type)
+			&& redir_opening(&fd, current) != 0)
 			return (1);
 		current = current->next;
 	}

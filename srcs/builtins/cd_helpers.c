@@ -21,14 +21,14 @@ bool	validate_path_exists(char *path)
 	{
 		ft_putstr_fd("minishell: cd: ", 2);
 		ft_putstr_fd(path, 2);
-		ft_putendl_fd(": No such file or directory\n", 2);
+		ft_putendl_fd(": No such file or directory", 2);
 		return (false);
 	}
 	if (!S_ISDIR(statbuf.st_mode))
 	{
 		ft_putstr_fd("minishell: cd: ", 2);
 		ft_putstr_fd(path, 2);
-		ft_putendl_fd(": Not a directory\n", 2);
+		ft_putendl_fd(": Not a directory", 2);
 		return (false);
 	}
 	return (true);

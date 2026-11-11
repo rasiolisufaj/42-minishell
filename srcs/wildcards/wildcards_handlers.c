@@ -58,52 +58,57 @@ void	expand_wildcards_in_tokens(t_token **token_list)
 	*token_list = head;
 }
 
-void	process_redir_wildcard_token(t_token **head, t_token **tail,
+// Returns 1 when the pattern matches several files (ambiguous redirect).
+int	process_redir_wildcard_token(t_token **head, t_token **tail,
 		t_token *current)
 {
 	t_token	*expanded;
 
 	expanded = handle_joker(current->value);
-	if (expanded)
+	if (expanded && expanded->next)
 	{
-		if (expanded->next != NULL)
-		{
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(current->value, 2);
-			ft_putendl_fd(": ambiguous redirect", 2);
-			process_non_expanded_token(head, tail, current);
-		}
-		else
-			process_expanded_token(head, tail, expanded, current);
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(current->value, 2);
+		ft_putendl_fd(": ambiguous redirect", 2);
+		free_tokens(expanded);
+		process_non_expanded_token(head, tail, current);
+		return (1);
 	}
+	if (expanded)
+		process_expanded_token(head, tail, expanded, current);
 	else
 		process_non_expanded_token(head, tail, current);
+	return (0);
 }
 
-void	expand_wildcards_in_redir(t_token **redir_list)
+int	expand_wildcards_in_redir(t_token **redir_list)
 {
 	t_token	*head;
 	t_token	*tail;
 	t_token	*current;
 	t_token	*next;
+	int		ambiguous;
 
 	head = NULL;
 	tail = NULL;
+	ambiguous = 0;
 	current = *redir_list;
 	while (current)
 	{
 		next = current->next;
 		if (should_expand_wildcard(current))
-			process_redir_wildcard_token(&head, &tail, current);
+			ambiguous |= process_redir_wildcard_token(&head, &tail, current);
 		else
 			process_non_expanded_token(&head, &tail, current);
 		current = next;
 	}
 	*redir_list = head;
+	return (ambiguous);
 }
 
-void	wildcards_cmd(t_node *node)
+// Returns 1 if a redirect is ambiguous; the command must then not run.
+int	wildcards_cmd(t_node *node)
 {
 	expand_wildcards_in_tokens(&node->tokens);
-	expand_wildcards_in_redir(&node->redir_list);
+	return (expand_wildcards_in_redir(&node->redir_list));
 }

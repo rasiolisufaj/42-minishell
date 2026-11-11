@@ -97,7 +97,7 @@ static char	*try_search_in_path(char *cmd, t_env *env)
 
 char	*find_path(char *cmd, t_env *env)
 {
-	if (!cmd || !env)
+	if (!cmd)
 		return (NULL);
 	if (ft_strchr(cmd, '/'))
 		return (handle_absolute_or_relative_path(cmd));

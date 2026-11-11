@@ -60,11 +60,11 @@ int	is_numeric_argument(char *arg)
 	return (0);
 }
 
-int	exit_exec(t_cmd *cmd)
+int	exit_exec(t_cmd *cmd, int last_status)
 {
 	int	exit_status;
 
-	exit_status = 0;
+	exit_status = last_status & 0xFF;
 	if (cmd->ac >= 2)
 	{
 		if (is_numeric_argument(cmd->args[1]) != 0)
@@ -75,8 +75,5 @@ int	exit_exec(t_cmd *cmd)
 		else
 			exit_status = ft_atoi(cmd->args[1]) & 0xFF;
 	}
-	else
-		exit_status = g_signal & 0xFF;
-	write(1, "exit\n", 5);
-	return (255 + (exit_status << 8));
+	return (EXIT_FLAG + exit_status);
 }

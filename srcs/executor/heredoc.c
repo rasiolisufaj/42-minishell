@@ -13,123 +13,117 @@
 #include "../../includes/minishell.h"
 #include "../../includes/minishell_structs.h"
 
-static void	free_cmd(t_cmd *cmd)
-{
-	int	i;
-
-	if (!cmd)
-		return ;
-	if (cmd->args)
-	{
-		i = 0;
-		while (cmd->args[i])
-		{
-			free(cmd->args[i]);
-			i++;
-		}
-		free(cmd->args);
-	}
-	free(cmd);
-}
-
-static bool	child_readline(char *stop, int pipe_fd[2])
+static void	write_heredoc_body(int fd, char *delim, bool expand, t_shell *sh)
 {
 	char	*line;
 
-	line = readline("> ");
-	if (!line)
-		return (FALSE);
-	if (ft_strncmp(line, stop, ft_strlen(stop)) == 0
-		&& ft_strlen(line) == ft_strlen(stop))
-	{
-		free(line);
-		close(pipe_fd[1]);
-		return (FALSE);
-	}
-	write(pipe_fd[1], line, ft_strlen(line));
-	write(pipe_fd[1], "\n", 1);
-	free(line);
-	return (TRUE);
-}
-
-void	heredoc_child(int pipe_fd[2], t_env *env, t_node *ast,
-		t_heredoc_args *args)
-{
-	char	*stop;
-
-	close(args->saved_in);
-	close(args->saved_out);
-	stop = ft_strdup(args->delimiter);
-	if (!stop)
-	{
-		ft_putendl_fd("Error: Memory allocation failed", 2);
-		exit(1);
-	}
-	close(pipe_fd[0]);
-	free_cmd(args->cmd);
-	cleanup_shell(ast, env);
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_IGN);
 	while (1)
 	{
-		if (!child_readline(stop, pipe_fd))
-			break ;
+		line = readline("> ");
+		if (!line)
+		{
+			ft_putstr_fd("minishell: warning: here-document delimited by "
+				"end-of-file (wanted `", 2);
+			ft_putstr_fd(delim, 2);
+			ft_putendl_fd("')", 2);
+			return ;
+		}
+		if (ft_strcmp(line, delim) == 0)
+		{
+			free(line);
+			return ;
+		}
+		if (expand)
+			line = expand_heredoc_line(line, sh);
+		ft_putendl_fd(line, fd);
+		free(line);
 	}
-	free(stop);
-	close(pipe_fd[1]);
+}
+
+static void	heredoc_child(int fd, char *raw_delim, t_shell *sh)
+{
+	char	*delim;
+	bool	expand;
+
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_IGN);
+	expand = !check_quotes(raw_delim);
+	delim = strip_quotes(raw_delim);
+	if (delim)
+		write_heredoc_body(fd, delim, expand, sh);
+	free(delim);
+	close(fd);
+	cleanup_shell(sh->ast, sh->env);
 	exit(0);
 }
 
-int	process_heredocs(t_node *ast, t_env *env)
+// Reads one heredoc into a temp file and makes `word` point to that file.
+// Returns 0, or the status to report: 1 on error, 130 on ctrl-C.
+static int	read_one_heredoc(t_token *word, t_shell *sh)
 {
-	t_token			*redir;
-	t_heredoc_args	args;
-
-	if (ast->type == N_PIPE)
-	{
-		if (process_heredocs(ast->left, env) != 0)
-			return (1);
-		if (process_heredocs(ast->right, env) != 0)
-			return (1);
-	}
-	redir = ast->redir_list;
-	while (redir)
-	{
-		if (redir->type == T_HEREDOC)
-		{
-			arg_helpers(&args, redir);
-			if (heredoc_redir(redir, env, ast, &args) == false)
-				return (close(args.saved_in), close(args.saved_out), 1);
-			close(args.saved_in);
-			close(args.saved_out);
-		}
-		redir = redir->next;
-	}
-	return (0);
-}
-
-int	handle_heredoc(t_env *env, t_node *ast, t_heredoc_args *args)
-{
-	int		pipe_fd[2];
+	char	*path;
+	int		fd;
 	int		status;
-	int		sig;
 	pid_t	pid;
 
-	if (pipe(pipe_fd) < 0)
-		return (perror("minishell: pipe"), 1);
+	path = heredoc_path(&fd);
+	if (!path)
+		return (perror("minishell: heredoc"), 1);
 	signal(SIGINT, SIG_IGN);
 	pid = fork();
 	if (pid < 0)
-		return (perror("minishell: fork"), signal(SIGINT, sigint_handler),
-			close(pipe_fd[0]), close(pipe_fd[1]), 1);
+		return (perror("minishell: fork"), close(fd), unlink(path),
+			free(path), setup_signals(), 1);
 	if (pid == 0)
-		heredoc_child(pipe_fd, env, ast, args);
-	close(pipe_fd[1]);
+		heredoc_child(fd, word->value, sh);
+	close(fd);
+	free(word->value);
+	word->value = path;
 	waitpid(pid, &status, 0);
-	signal(SIGINT, sigint_handler);
+	setup_signals();
 	if (WIFSIGNALED(status))
-		return (sig_heredoc(status, &sig), close(pipe_fd[0]), 128 + sig);
-	if (dup2(pipe_fd[0], STDIN_FILENO) < 0)
-		return (perror("minishell: dup2"), close(pipe_fd[0]), 1);
-	return (close(pipe_fd[0]), 0);
+		return (write(1, "\n", 1), 130);
+	return (0);
+}
+
+// Reads every heredoc of the line, in order, before anything runs.
+int	read_heredocs(t_node *node, t_shell *sh)
+{
+	t_token	*redir;
+	int		ret;
+
+	if (!node)
+		return (0);
+	ret = read_heredocs(node->left, sh);
+	if (ret == 0)
+		ret = read_heredocs(node->right, sh);
+	redir = node->redir_list;
+	while (ret == 0 && redir)
+	{
+		if (redir->type == T_HEREDOC && redir->next)
+			ret = read_one_heredoc(redir->next, sh);
+		redir = redir->next;
+	}
+	return (ret);
+}
+
+// Only paths we created are removed: after a ctrl-C, later heredocs still
+// hold their delimiter, which may be the name of a real file.
+void	unlink_heredocs(t_node *node)
+{
+	t_token	*redir;
+
+	if (!node)
+		return ;
+	unlink_heredocs(node->left);
+	unlink_heredocs(node->right);
+	redir = node->redir_list;
+	while (redir)
+	{
+		if (redir->type == T_HEREDOC && redir->next
+			&& ft_strncmp(redir->next->value, HEREDOC_PREFIX,
+				ft_strlen(HEREDOC_PREFIX)) == 0)
+			unlink(redir->next->value);
+		redir = redir->next;
+	}
 }

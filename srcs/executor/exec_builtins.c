@@ -28,28 +28,28 @@ int	is_builtin(t_cmd *cmd)
 	return (0);
 }
 
-int	exec_builtin(t_cmd *cmd, t_env **env)
+int	exec_builtin(t_cmd *cmd, t_shell *sh)
 {
 	if (!cmd || !cmd->args || !cmd->args[0])
 		return (1);
 	if (ft_strcmp(cmd->args[0], "cd") == 0)
-		return (cd_exec(cmd, *env));
+		return (cd_exec(cmd, &sh->env));
 	else if (ft_strcmp(cmd->args[0], "echo") == 0)
 		return (echo_exec(cmd));
 	else if (ft_strcmp(cmd->args[0], "pwd") == 0)
-		return (pwd_exec(*env));
+		return (pwd_exec(sh->env));
 	else if (ft_strcmp(cmd->args[0], "export") == 0)
-		return (export_exec(cmd, env));
+		return (export_exec(cmd, &sh->env));
 	else if (ft_strcmp(cmd->args[0], "unset") == 0)
-		return (unset_exec(cmd, env));
+		return (unset_exec(cmd, &sh->env));
 	else if (ft_strcmp(cmd->args[0], "env") == 0)
 	{
 		if (cmd->ac > 1)
 			return (write(2, "env: too many arguments\n", 24), 1);
 		else
-			return (env_exec(*env));
+			return (env_exec(sh->env));
 	}
 	else if (ft_strcmp(cmd->args[0], "exit") == 0)
-		return (exit_exec(cmd));
+		return (exit_exec(cmd, sh->last_status));
 	return (1);
 }

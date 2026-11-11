@@ -1,0 +1,21 @@
+echo hello | cat | wc -l
+export A=1 B
+unset A
+export
+env
+pwd
+ls nope
+echo $? "$USER" '$x'
+echo hi > f
+cat < f >> g
+cat << EOF
+body
+EOF
+nopecmd
+/tmp
+true && echo y || echo n
+(echo g) | cat
+echo *.txt
+export S="a b c"
+echo $S
+exit 3

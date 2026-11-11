@@ -13,15 +13,9 @@
 #include "../../includes/minishell.h"
 #include "../../includes/minishell_structs.h"
 
-static int	create_pipe(int pipefd[2])
-{
-	if (pipe(pipefd) < 0)
-		return (perror("pipe"), 1);
-	return (0);
-}
-
-static pid_t	spawn_left_child(t_node *ast, t_env **env, int pipefd[2],
-		int saved_stdin)
+// Runs one side of the pipe in a child. `end` is the fd the child replaces:
+// STDOUT_FILENO for the left side, STDIN_FILENO for the right side.
+static pid_t	spawn_child(t_node *node, t_shell *sh, int pipefd[2], int end)
 {
 	pid_t	pid;
 	int		status;
@@ -33,47 +27,12 @@ static pid_t	spawn_left_child(t_node *ast, t_env **env, int pipefd[2],
 	{
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
-		close(saved_stdin);
-		close(pipefd[0]);
-		dup2(pipefd[1], STDOUT_FILENO);
-		close(pipefd[1]);
-		if (ast->left->redir_list && handle_redir(*env, ast, NULL) != 0)
-		{
-			cleanup_shell(ast, *env);
-			exit(1);
-		}
-		status = execute(ast->left, env);
-		cleanup_shell(ast, *env);
-		exit(status);
-	}
-	return (pid);
-}
-
-static pid_t	spawn_right_child(t_node *ast, t_env **env, int pipefd[2],
-		int saved_stdin)
-{
-	pid_t	pid;
-	int		status;
-
-	pid = fork();
-	if (pid < 0)
-		return (perror("fork"), -1);
-	if (pid == 0)
-	{
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_DFL);
-		close(saved_stdin);
-		close(pipefd[1]);
-		dup2(pipefd[0], STDIN_FILENO);
-		close(pipefd[0]);
-		if (ast->right->redir_list && handle_redir(*env, ast, NULL) != 0)
-		{
-			cleanup_shell(ast, *env);
-			exit(1);
-		}
-		status = execute(ast->right, env);
-		cleanup_shell(ast, *env);
-		exit(status);
+		close(pipefd[1 - end]);
+		dup2(pipefd[end], end);
+		close(pipefd[end]);
+		status = execute(node, sh);
+		cleanup_shell(sh->ast, sh->env);
+		exit(status & 0xFF);
 	}
 	return (pid);
 }
@@ -97,31 +56,21 @@ static int	wait_for_pipe_children(pid_t left_pid, pid_t right_pid)
 	return (final_status);
 }
 
-int	exec_pipe(t_node *ast, t_env **env)
+int	exec_pipe(t_node *ast, t_shell *sh)
 {
 	int		pipefd[2];
 	pid_t	left_pid;
 	pid_t	right_pid;
-	int		saved_stdin;
-	int		status;
 
-	saved_stdin = dup(STDIN_FILENO);
-	if (saved_stdin < 0)
-		return (1);
-	if (process_heredocs(ast, *env) != 0)
-		return (close(saved_stdin), 1);
-	if (create_pipe(pipefd) != 0)
-		return (close(saved_stdin), 1);
-	left_pid = spawn_left_child(ast, env, pipefd, saved_stdin);
+	if (pipe(pipefd) < 0)
+		return (perror("pipe"), 1);
+	left_pid = spawn_child(ast->left, sh, pipefd, STDOUT_FILENO);
 	if (left_pid < 0)
-		return (close(saved_stdin), 1);
-	right_pid = spawn_right_child(ast, env, pipefd, saved_stdin);
-	if (right_pid < 0)
-		return (close(saved_stdin), 1);
+		return (close(pipefd[0]), close(pipefd[1]), 1);
+	right_pid = spawn_child(ast->right, sh, pipefd, STDIN_FILENO);
 	close(pipefd[0]);
 	close(pipefd[1]);
-	status = wait_for_pipe_children(left_pid, right_pid);
-	dup2(saved_stdin, STDIN_FILENO);
-	close(saved_stdin);
-	return (status);
+	if (right_pid < 0)
+		return (waitpid(left_pid, NULL, 0), 1);
+	return (wait_for_pipe_children(left_pid, right_pid));
 }

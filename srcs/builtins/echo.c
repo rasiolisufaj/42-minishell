@@ -17,7 +17,7 @@ bool	is_n_flag(char *arg)
 {
 	int	i;
 
-	if (arg == NULL || arg[0] != '-')
+	if (arg == NULL || arg[0] != '-' || arg[1] == '\0')
 		return (false);
 	i = 1;
 	while (arg[i])
