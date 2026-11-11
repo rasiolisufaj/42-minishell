@@ -13,7 +13,8 @@
 #include "../../includes/minishell.h"
 #include "../../includes/minishell_structs.h"
 
-t_node	*parser(const char *input, t_env *env, int last_status)
+// Builds the tree only. Heredocs are read and words expanded by the caller.
+t_node	*parser(const char *input)
 {
 	t_token	*tokens;
 	t_token	*tokens_head;
@@ -32,8 +33,6 @@ t_node	*parser(const char *input, t_env *env, int last_status)
 		free_tokens(tokens_head);
 		return (parser_error("syntax error: unexpected token after cmd"), NULL);
 	}
-	expand_wildcards(ast);
-	expand_ast(ast, env, last_status);
 	free_tokens(tokens_head);
 	return (ast);
 }

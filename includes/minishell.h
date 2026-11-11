@@ -36,22 +36,24 @@
 # define PROMPT "minishell> "
 # define EXIT_SUCCESS 0
 # define EXIT_FAILURE 1
+# define EXIT_FLAG 256
+# define HEREDOC_PREFIX "/tmp/.minishell_hd_"
 
 extern int	g_signal;
 
 // EXECUTOR
-int			execute(t_node *ast, t_env **env);
-int			exec_or(t_node *ast, t_env **env);
-int			exec_and(t_node *ast, t_env **env);
-int			exec_cmd(t_node *ast, t_env **env);
-int			exec_pipe(t_node *ast, t_env **env);
-int			exec_group(t_node *ast, t_env **env);
+int			execute(t_node *ast, t_shell *sh);
+int			exec_or(t_node *ast, t_shell *sh);
+int			exec_and(t_node *ast, t_shell *sh);
+int			exec_cmd(t_node *ast, t_shell *sh);
+int			exec_pipe(t_node *ast, t_shell *sh);
+int			exec_group(t_node *ast, t_shell *sh);
 
 // BUILTINS
 int			pwd_exec(t_env *env);
-int			exit_exec(t_cmd *cmd);
+int			exit_exec(t_cmd *cmd, int last_status);
 int			cmp_env(t_env *a, t_env *b);
-int			cd_exec(t_cmd *cmd, t_env *env);
+int			cd_exec(t_cmd *cmd, t_env **env);
 int			add_exported(char *arg, t_env **env);
 int			export_exec(t_cmd *cmd, t_env **env);
 int			export_exec(t_cmd *cmd, t_env **env);
@@ -75,9 +77,9 @@ void		add_env_to_list(t_env **env, t_env **tail, t_env *new_env);
 
 // MAIN
 int			check_args(int argc, char **argv);
-int			process_command_line(t_node **ast, t_env *env);
+int			process_command_line(t_shell *sh);
 void		cleanup_shell(t_node *ast, t_env *env);
-void		init_shell(t_env **env, t_node **ast, char **envp);
+void		init_shell(t_shell *sh, char **envp);
 
 // EXPAND
 int			check_quotes(char *value);
@@ -93,7 +95,6 @@ char		*consume_unquoted(char *value, int *i);
 char		*consume_single_quote(char *value, int *i);
 char		*consume_double_quote(char *value, int *i, t_env *env,
 				int last_status);
-void		expand_wildcards(t_node *node);
 void		append_string(char **input, char *str);
 void		expand_ast(t_node *node, t_env *env, int last_status);
 void		free_token_content(t_token *token, char *new_val, char *old_val);
@@ -114,8 +115,8 @@ int			should_include_entry(char *pattern, struct dirent *entry);
 int			process_directory_entries(char *str, t_token **head, t_token **tail,
 				DIR *dir);
 void		sort_token(t_token *token);
-void		wildcards_cmd(t_node *node);
-void		expand_wildcards_in_redir(t_token **redir_list);
+int			wildcards_cmd(t_node *node);
+int			expand_wildcards_in_redir(t_token **redir_list);
 void		expand_wildcards_in_tokens(t_token **token_list);
 void		add_token_to_list(t_token **head, t_token **tail,
 				t_token *new_token);
@@ -126,7 +127,7 @@ void		process_expanded_token(t_token **head, t_token **tail,
 				t_token *expanded, t_token *current);
 void		process_non_expanded_token(t_token **head, t_token **tail,
 				t_token *current);
-void		process_redir_wildcard_token(t_token **head, t_token **tail,
+int			process_redir_wildcard_token(t_token **head, t_token **tail,
 				t_token *current);
 bool		should_expand_wildcard(t_token *token);
 t_token		*handle_joker(char *str);
@@ -142,7 +143,7 @@ t_node		*parse_pipe(t_token **tokens);
 t_node		*parse_group(t_token **tokens);
 t_node		*parse_and_or(t_token **tokens);
 t_node		*create_node(t_node_type type);
-t_node		*parser(const char *input, t_env *env, int last_status);
+t_node		*parser(const char *input);
 
 // LEXER
 int			tokenizer(const char *input, int *i, t_token *new_token);
@@ -185,24 +186,18 @@ int			env_exec(t_env *env);
 int			echo_exec(t_cmd *cmd);
 int			is_builtin(t_cmd *cmd);
 int			unset_exec(t_cmd *cmd, t_env **env);
-int			exec_external(t_heredoc_args *args, t_env *env);
-int			exec_builtin(t_cmd *cmd, t_env **env);
-int			process_heredocs(t_node *ast, t_env *env);
-int			count_heredocs(t_token *redir_list);
-int			handle_redir(t_env *env, t_node *ast, t_heredoc_args *args);
-int			handle_heredoc(t_env *env, t_node *ast, t_heredoc_args *args);
-int			handle_mult_heredoc(t_env *env, t_node *ast, t_heredoc_args *args);
+int			exec_external(t_heredoc_args *args, t_shell *sh);
+int			exec_builtin(t_cmd *cmd, t_shell *sh);
+int			handle_redir(t_token *redir_list);
+int			read_heredocs(t_node *node, t_shell *sh);
 char		*find_path(char *cmd, t_env *env);
 char		**env_to_envp(t_env *env);
 void		ft_free_split(char **ptr);
-void		heredoc_child(int pipe_fd[2], t_env *env, t_node *ast,
-				t_heredoc_args *args);
-void		sig_heredoc(int status, int *sig);
+void		unlink_heredocs(t_node *node);
 void		close_files(t_heredoc_args *args);
-void		arg_helpers(t_heredoc_args *args, t_token *redir);
 t_cmd		*init_cmd(t_node *ast);
-t_token		*find_last_heredoc(t_token *redir_list);
-bool		heredoc_redir(t_token *current, t_env *env, t_node *ast,
-				t_heredoc_args *args);
+char		*strip_quotes(char *s);
+char		*heredoc_path(int *fd);
+char		*expand_heredoc_line(char *line, t_shell *sh);
 
 #endif

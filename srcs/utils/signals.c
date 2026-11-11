@@ -14,19 +14,17 @@
 
 void	sigint_handler(int signo)
 {
-	(void)signo;
-	g_signal = 130;
+	g_signal = signo;
 	rl_replace_line("", 0);
-	printf("\n");
+	write(1, "\n", 1);
 	rl_on_new_line();
 	rl_redisplay();
 }
 
 void	sigint_handler_waiting(int signo)
 {
-	(void)signo;
-	g_signal = 130;
-	printf("\n");
+	g_signal = signo;
+	write(1, "\n", 1);
 }
 
 void	setup_signals(void)

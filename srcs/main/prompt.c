@@ -21,7 +21,7 @@ char	*get_prompt(void)
 	{
 		line = readline(PROMPT);
 		if (!line)
-			return (printf("exit\n"), NULL);
+			return (write(1, "exit\n", 5), NULL);
 		if (line[0] == '\0')
 		{
 			free(line);

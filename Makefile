@@ -30,6 +30,8 @@ LIBFT_INC := -I$(LIBDIR)
 
 # Includes
 INCLUDES := -I$(INCDIR) $(LIBFT_INC)
+HEADERS := $(INCDIR)/minishell.h $(INCDIR)/minishell_structs.h \
+	$(LIBDIR)/libft.h
 
 # Libraries
 LIBS := -lreadline -lhistory
@@ -47,7 +49,7 @@ SRC_FILES := \
 	srcs/executor/exec_cmd.c srcs/executor/exec_pipe.c \
 	srcs/executor/executor.c srcs/executor/external_cmd.c \
 	srcs/executor/find_path.c srcs/executor/heredoc.c \
-	srcs/executor/init_and_dup.c srcs/executor/mult_heredoc.c \
+	srcs/executor/init_and_dup.c srcs/executor/heredoc_utils.c \
 	srcs/executor/redirections.c \
 	srcs/expands/consume_double_quote.c srcs/expands/consume_single_quote.c \
 	srcs/expands/consume_unquoted.c srcs/expands/expand_helpers.c \
@@ -64,10 +66,8 @@ SRC_FILES := \
 	srcs/parser/parser.c \
 	srcs/utils/all_utilities.c srcs/utils/parser_utils.c \
 	srcs/utils/signals.c srcs/utils/utils_2.c \
-	srcs/utils/sig_heredoc.c \
 	srcs/wildcards/wildcards_directory.c srcs/wildcards/wildcards_handlers.c \
-	srcs/wildcards/wildcards_pattern_match.c srcs/wildcards/wildcards_token_utils.c \
-	srcs/wildcards/wildcards.c
+	srcs/wildcards/wildcards_pattern_match.c srcs/wildcards/wildcards_token_utils.c
 
 OBJ_FILES := $(patsubst %.c, $(BUILDDIR)/%.o, $(SRC_FILES))
 
@@ -94,7 +94,7 @@ $(NAME_BONUS): $(OBJ_FILES)
 	@echo "$(GREEN)[OK] minishell built!$(NC)"
 
 # Pattern rule for compiling .c to .o in build/
-$(BUILDDIR)/%.o: %.c
+$(BUILDDIR)/%.o: %.c $(HEADERS)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@ $(INCLUDES)
 

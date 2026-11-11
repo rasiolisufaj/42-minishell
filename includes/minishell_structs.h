@@ -92,9 +92,15 @@ typedef struct s_cmd
 typedef struct s_heredoc_args
 {
 	t_cmd	*cmd;
-	char	*delimiter;
 	int		saved_in;
 	int		saved_out;
 }	t_heredoc_args;
+
+typedef struct s_shell
+{
+	t_env	*env;
+	t_node	*ast;
+	int		last_status;
+}	t_shell;
 
 #endif

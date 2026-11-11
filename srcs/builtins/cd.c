@@ -66,26 +66,26 @@ char	*get_newpwd_char(char *oldpwd, char *path)
 	return (newpwd);
 }
 
-static bool	cd_change_directory(char *path, t_env *env)
+static bool	cd_change_directory(char *path, t_env **env)
 {
 	char	*oldpwd;
 	char	*newpwd;
 
 	if_relative_path(path);
-	oldpwd = get_oldpwd_char(env);
+	oldpwd = get_oldpwd_char(*env);
 	if (!oldpwd)
 		return (false);
 	if (!validate_path_exists(path) || !change_to_directory(path))
 		return (free(oldpwd), false);
-	set_env_value(&env, "OLDPWD", oldpwd);
+	set_env_value(env, "OLDPWD", oldpwd);
 	newpwd = get_newpwd_char(oldpwd, path);
 	if (!newpwd)
 		return (free(oldpwd), false);
-	set_env_value(&env, "PWD", newpwd);
+	set_env_value(env, "PWD", newpwd);
 	return (free(oldpwd), free(newpwd), true);
 }
 
-int	cd_exec(t_cmd *cmd, t_env *env)
+int	cd_exec(t_cmd *cmd, t_env **env)
 {
 	char	*targ;
 	char	*home;
@@ -95,7 +95,7 @@ int	cd_exec(t_cmd *cmd, t_env *env)
 			EXIT_FAILURE);
 	else if (cmd->ac == 1 || (cmd->ac == 2 && cmd->args[1][0] == '~'))
 	{
-		home = get_env_value(env, "HOME");
+		home = get_env_value(*env, "HOME");
 		if (home == NULL)
 			return (ft_putendl_fd("minishell: cd: HOME not set", 2),
 				EXIT_FAILURE);

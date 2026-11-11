@@ -33,19 +33,11 @@ int	parent_external(pid_t pid, char *path_cmd, char **envp)
 {
 	int	status;
 
-	setup_signals_waiting();
 	waitpid(pid, &status, WUNTRACED);
-	if (WIFSTOPPED(status))
-	{
-		printf("\n");
-		setup_signals();
-		free(path_cmd);
-		ft_free_split(envp);
-		return (130);
-	}
-	setup_signals();
 	free(path_cmd);
 	ft_free_split(envp);
+	if (WIFSTOPPED(status))
+		return (write(1, "\n", 1), 130);
 	if (WIFEXITED(status))
 		return (WEXITSTATUS(status));
 	else if (WIFSIGNALED(status))
@@ -67,20 +59,20 @@ void	wrong_path_cmd(char *cmd)
 	}
 }
 
-int	exec_external(t_heredoc_args *args, t_env *env)
+int	exec_external(t_heredoc_args *args, t_shell *sh)
 {
 	char	*path_cmd;
 	char	**envp;
 	pid_t	pid;
 
-	if (!args || !args->cmd || !args->cmd->args || !args->cmd->args[0] || !env)
+	if (!args || !args->cmd || !args->cmd->args || !args->cmd->args[0])
 		return (1);
-	path_cmd = find_path(args->cmd->args[0], env);
+	path_cmd = find_path(args->cmd->args[0], sh->env);
 	if (!path_cmd)
 		return (wrong_path_cmd(args->cmd->args[0]), 127);
 	if (path_cmd == (char *)126)
 		return (126);
-	envp = env_to_envp(env);
+	envp = env_to_envp(sh->env);
 	if (!envp)
 		return (free(path_cmd),
 			ft_putendl_fd("minishell: memory allocation failed", 2), 1);

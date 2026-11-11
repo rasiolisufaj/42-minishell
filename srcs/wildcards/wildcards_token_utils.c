@@ -22,7 +22,7 @@ t_token	*create_token_with_path(char *dir_path, char *name)
 	if (!token)
 		return (NULL);
 	if (ft_strcmp(dir_path, ".") == 0)
-		token->value = strdup(name);
+		token->value = ft_strdup(name);
 	else
 	{
 		tmp = ft_strjoin(dir_path, "/");
@@ -43,7 +43,7 @@ t_token	*create_token_copy(char *name)
 	token = malloc(sizeof(t_token));
 	if (!token)
 		return (NULL);
-	token->value = strdup(name);
+	token->value = ft_strdup(name);
 	if (!token->value)
 		return (free(token), NULL);
 	token->type = T_WORD;

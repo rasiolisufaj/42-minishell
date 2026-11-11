@@ -94,15 +94,16 @@ void	word_splitting(t_token **list, t_token **prev,
 	t_token	*word_tokens;
 	t_token	*next_original;
 
-	if (!new_value || !*new_value)
-		return ;
 	word_tokens = create_word_tokens(new_value);
-	if (!word_tokens)
-		return ;
 	next_original = (*current)->next;
 	free((*current)->value);
 	free(*current);
-	link_word_tokens(list, prev, word_tokens, next_original);
-	*current = next_original;
 	free(new_value);
+	if (word_tokens)
+		link_word_tokens(list, prev, word_tokens, next_original);
+	else if (*prev)
+		(*prev)->next = next_original;
+	else
+		*list = next_original;
+	*current = next_original;
 }

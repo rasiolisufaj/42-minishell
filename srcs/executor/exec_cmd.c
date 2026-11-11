@@ -48,29 +48,29 @@ void	empty_cmd(t_heredoc_args *args)
 	free_cmd(args->cmd);
 }
 
-int	exec_cmd(t_node *ast, t_env **env)
+int	exec_cmd(t_node *ast, t_shell *sh)
 {
 	int				status;
 	t_heredoc_args	args;
 
-	if (ast == NULL || ast->type != N_CMD)
+	if (ast == NULL || ast->type != N_CMD || wildcards_cmd(ast) != 0)
 		return (1);
+	expand_ast(ast, sh->env, sh->last_status);
 	args.cmd = init_cmd(ast);
 	if (!args.cmd)
 		return (1);
-	args.delimiter = NULL;
 	args.saved_in = dup(STDIN_FILENO);
 	args.saved_out = dup(STDOUT_FILENO);
-	if (handle_redir(*env, ast, &args) != 0)
+	if (handle_redir(ast->redir_list) != 0)
 		return (close_files(&args), free_cmd(args.cmd), 1);
 	if (!args.cmd->args || !args.cmd->args[0])
 		return (close_files(&args), free_cmd(args.cmd), 0);
 	if (args.cmd->args[0][0] == '\0')
 		return (empty_cmd(&args), 127);
 	if (is_builtin(args.cmd))
-		status = exec_builtin(args.cmd, env);
+		status = exec_builtin(args.cmd, sh);
 	else
-		status = exec_external(&args, *env);
+		status = exec_external(&args, sh);
 	close_files(&args);
 	free_cmd(args.cmd);
 	return (status);

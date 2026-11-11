@@ -91,11 +91,11 @@ t_env	*init_env(char **envp)
 	return (env);
 }
 
-void	init_shell(t_env **env, t_node **ast, char **envp)
+void	init_shell(t_shell *sh, char **envp)
 {
-	*env = NULL;
-	*ast = NULL;
+	sh->ast = NULL;
+	sh->last_status = 0;
 	g_signal = 0;
 	setup_signals();
-	*env = init_env(envp);
+	sh->env = init_env(envp);
 }
